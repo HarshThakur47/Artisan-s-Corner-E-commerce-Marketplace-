@@ -103,7 +103,7 @@ export const addReview = createAsyncThunk('products/addReview', async ({ id, rev
     return thunkAPI.rejectWithValue(message);
   }
 });
-
+//product 
 export const productSlice = createSlice({
   name: 'product',
   initialState,
