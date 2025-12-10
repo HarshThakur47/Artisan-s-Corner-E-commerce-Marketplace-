@@ -1,0 +1,33 @@
+{
+  "name": "artisans-corner",
+  "version": "1.0.0",
+  "description": "Artisan's Corner - Indian E-commerce Platform for Handmade Crafts",
+  "main": "index.js",
+  "scripts": {
+    "install-all": "npm install && cd frontend && npm install",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd backend && npm run dev",
+    "client": "cd frontend && npm start",
+    "build": "cd frontend && npm run build",
+    "start": "cd backend && npm start",
+    "data:import": "cd backend && npm run data:import",
+    "data:destroy": "cd backend && npm run data:destroy",
+    "test:db": "cd backend && npm run test:db",
+    "test:api": "cd backend && npm run test:api",
+    "test:payment": "cd backend && npm run test:payment"
+  },
+  "keywords": [
+    "e-commerce",
+    "marketplace",
+    "handmade",
+    "crafts",
+    "india",
+    "artisans",
+    "razorpay"
+  ],
+  "author": "Artisan's Corner Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
