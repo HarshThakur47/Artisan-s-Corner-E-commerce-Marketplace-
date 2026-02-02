@@ -253,12 +253,6 @@ npm start           # Start production server
 4. Test thoroughly
 5. Submit a pull request
 
-## 📞 Support
-
-- **Documentation**: Check the docs folder
-- **Issues**: Create an issue on GitHub
-- **Email**: support@artisanscorner.com
-
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
