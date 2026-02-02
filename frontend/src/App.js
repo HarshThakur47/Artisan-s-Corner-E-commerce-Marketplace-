@@ -21,6 +21,7 @@ import CheckoutPage from './pages/CheckoutPage';
 import OrderPage from './pages/OrderPage';
 import ProfilePage from './pages/ProfilePage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
+import ProductEditPage from './pages/ProductEditPage';
 
 // Protected Route Component
 import ProtectedRoute from './components/ProtectedRoute';
@@ -62,6 +63,11 @@ function App() {
               <Route path="/admin" element={
                 <AdminRoute>
                   <AdminDashboardPage />
+                </AdminRoute>
+              } />
+              <Route path="/admin/product/:id/edit" element={
+                <AdminRoute>
+                  <ProductEditPage />
                 </AdminRoute>
               } />
             </Routes>

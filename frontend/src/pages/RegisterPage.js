@@ -161,7 +161,7 @@ const RegisterPage = () => {
                 </button>
               </div>
             </div>
-
+                  <br/>
             <div>
               <label htmlFor="confirmPassword" className="form-label">
                 Confirm Password
@@ -191,7 +191,7 @@ const RegisterPage = () => {
                 </button>
               </div>
             </div>
-
+                  <br/>
             <div className="flex items-center">
               <input
                 id="agree-terms"
