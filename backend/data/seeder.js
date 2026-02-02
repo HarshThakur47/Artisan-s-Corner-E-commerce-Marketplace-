@@ -92,18 +92,63 @@ const importData = async () => {
     await Product.deleteMany();
     await User.deleteMany();
 
-    // Create users
+    // 1. Create users
+    // Note: We use User.create() so the password hashing middleware runs!
     const createdUsers = await User.create(sampleUsers);
     const adminUser = createdUsers[0]._id;
+    const regularUser = createdUsers[1]._id;
 
-    // Add admin user to products
+    // 2. Add admin user to products
     const sampleProductsWithUser = sampleProducts.map((product) => {
       return { ...product, user: adminUser };
     });
 
-    await Product.insertMany(sampleProductsWithUser);
+    const createdProducts = await Product.insertMany(sampleProductsWithUser);
+    
+    // 3. Create a Sample Order
+    const sampleOrder = {
+      user: regularUser,
+      orderItems: [
+        {
+          name: createdProducts[0].name,
+          qty: 2,
+          image: createdProducts[0].image,
+          price: createdProducts[0].price,
+          product: createdProducts[0]._id,
+        },
+        {
+          name: createdProducts[2].name,
+          qty: 1,
+          image: createdProducts[2].image,
+          price: createdProducts[2].price,
+          product: createdProducts[2]._id,
+        }
+      ],
+      shippingAddress: {
+        address: '123 Main St',
+        city: 'Chandigarh',
+        postalCode: '160001',
+        country: 'India',
+      },
+      paymentMethod: 'Razorpay',
+      paymentResult: {
+        id: 'pay_sample123',
+        status: 'completed',
+        update_time: Date.now(),
+        email_address: 'john@example.com',
+      },
+      itemsPrice: 1197,
+      taxPrice: 100,
+      shippingPrice: 0,
+      totalPrice: 1297,
+      isPaid: true,
+      paidAt: Date.now(),
+      isDelivered: false,
+    };
 
-    console.log('Data imported successfully');
+    await Order.create(sampleOrder);
+
+    console.log('Data (Users, Products, and Sample Order) imported successfully');
     process.exit();
   } catch (error) {
     console.error(`Error: ${error}`);

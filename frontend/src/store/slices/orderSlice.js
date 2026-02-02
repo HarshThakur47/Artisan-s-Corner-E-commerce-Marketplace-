@@ -29,7 +29,7 @@ export const createOrder = createAsyncThunk('orders/create', async (orderData, t
   }
 });
 
-// Get user orders
+// Get user orders (My Orders)
 export const getUserOrders = createAsyncThunk('orders/getUserOrders', async (_, thunkAPI) => {
   try {
     const token = thunkAPI.getState().auth.user?.token;
@@ -39,6 +39,23 @@ export const getUserOrders = createAsyncThunk('orders/getUserOrders', async (_, 
       },
     };
     const response = await axios.get(`${API_URL}/orders/myorders`, config);
+    return response.data;
+  } catch (error) {
+    const message = error.response?.data?.message || error.message || error.toString();
+    return thunkAPI.rejectWithValue(message);
+  }
+});
+
+// Get ALL orders (Admin)
+export const getOrders = createAsyncThunk('orders/getAll', async (_, thunkAPI) => {
+  try {
+    const token = thunkAPI.getState().auth.user?.token;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const response = await axios.get(`${API_URL}/orders`, config);
     return response.data;
   } catch (error) {
     const message = error.response?.data?.message || error.message || error.toString();
@@ -73,6 +90,23 @@ export const updateOrderToPaid = createAsyncThunk('orders/updateToPaid', async (
       },
     };
     const response = await axios.put(`${API_URL}/orders/${id}/pay`, paymentResult, config);
+    return response.data;
+  } catch (error) {
+    const message = error.response?.data?.message || error.message || error.toString();
+    return thunkAPI.rejectWithValue(message);
+  }
+});
+
+// Update order to delivered (Admin)
+export const deliverOrder = createAsyncThunk('orders/deliver', async (id, thunkAPI) => {
+  try {
+    const token = thunkAPI.getState().auth.user?.token;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const response = await axios.put(`${API_URL}/orders/${id}/deliver`, {}, config);
     return response.data;
   } catch (error) {
     const message = error.response?.data?.message || error.message || error.toString();
@@ -127,9 +161,8 @@ export const orderSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(createOrder.pending, (state) => {
-        state.isLoading = true;
-      })
+      // Create Order
+      .addCase(createOrder.pending, (state) => { state.isLoading = true; })
       .addCase(createOrder.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
@@ -140,12 +173,10 @@ export const orderSlice = createSlice({
         state.isError = true;
         state.message = action.payload;
       })
-      .addCase(getUserOrders.pending, (state) => {
-        state.isLoading = true;
-      })
+      // Get User Orders
+      .addCase(getUserOrders.pending, (state) => { state.isLoading = true; })
       .addCase(getUserOrders.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.isSuccess = true;
         state.orders = action.payload;
       })
       .addCase(getUserOrders.rejected, (state, action) => {
@@ -153,12 +184,21 @@ export const orderSlice = createSlice({
         state.isError = true;
         state.message = action.payload;
       })
-      .addCase(getOrderById.pending, (state) => {
-        state.isLoading = true;
+      // Get ALL Orders (Admin)
+      .addCase(getOrders.pending, (state) => { state.isLoading = true; })
+      .addCase(getOrders.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.orders = action.payload;
       })
+      .addCase(getOrders.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      // Get Order By ID
+      .addCase(getOrderById.pending, (state) => { state.isLoading = true; })
       .addCase(getOrderById.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.isSuccess = true;
         state.order = action.payload;
       })
       .addCase(getOrderById.rejected, (state, action) => {
@@ -166,42 +206,15 @@ export const orderSlice = createSlice({
         state.isError = true;
         state.message = action.payload;
       })
-      .addCase(updateOrderToPaid.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(updateOrderToPaid.fulfilled, (state, action) => {
+      // Deliver Order
+      .addCase(deliverOrder.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.order = action.payload;
-      })
-      .addCase(updateOrderToPaid.rejected, (state, action) => {
-        state.isLoading = false;
-        state.isError = true;
-        state.message = action.payload;
-      })
-      .addCase(createRazorpayOrder.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(createRazorpayOrder.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.isSuccess = true;
-      })
-      .addCase(createRazorpayOrder.rejected, (state, action) => {
-        state.isLoading = false;
-        state.isError = true;
-        state.message = action.payload;
-      })
-      .addCase(verifyRazorpayPayment.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(verifyRazorpayPayment.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.isSuccess = true;
-      })
-      .addCase(verifyRazorpayPayment.rejected, (state, action) => {
-        state.isLoading = false;
-        state.isError = true;
-        state.message = action.payload;
+        // Update the specific order in the list without reloading
+        const index = state.orders.findIndex(order => order._id === action.payload._id);
+        if (index !== -1) {
+          state.orders[index] = action.payload;
+        }
       });
   },
 });
