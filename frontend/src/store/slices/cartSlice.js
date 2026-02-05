@@ -55,6 +55,10 @@ export const cartSlice = createSlice({
       state.paymentMethod = action.payload;
       localStorage.setItem('paymentMethod', JSON.stringify(action.payload));
     },
+    clearCart: (state) => {
+    state.cartItems = [];
+    localStorage.setItem('cartItems', JSON.stringify([]));
+    },
   },
 });
 
