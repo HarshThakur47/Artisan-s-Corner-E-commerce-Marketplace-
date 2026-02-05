@@ -3,7 +3,7 @@ const router = express.Router();
 const asyncHandler = require('express-async-handler');
 const Order = require('../models/orderModel');
 const { protect, admin } = require('../middleware/authMiddleware');
-
+const Razorpay = require('razorpay');
 // @desc    Create new order
 // @route   POST /api/orders
 // @access  Private
@@ -121,5 +121,42 @@ router.route('/myorders').get(protect, getMyOrders);
 router.route('/:id').get(protect, getOrderById);
 router.route('/:id/pay').put(protect, updateOrderToPaid);
 router.route('/:id/deliver').put(protect, admin, updateOrderToDelivered);
+
+// RazorPay Setup
+router.get('/config/razorpay', (req, res) => {
+  res.send(process.env.RAZORPAY_KEY_ID);
+});
+
+// 2. Route to Create Razorpay Order
+router.post('/razorpay', async (req, res) => {
+  const razorpay = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
+  });
+
+  const payment_capture = 1;
+  const amount = req.body.amount;
+  const currency = 'INR';
+
+  const options = {
+    amount: amount * 100, // Razorpay handles amount in "Paisa" (100 INR = 10000 paisa)
+    currency,
+    receipt: `receipt_${Date.now()}`,
+    payment_capture,
+  };
+
+  try {
+    const response = await razorpay.orders.create(options);
+    res.json({
+      id: response.id,
+      currency: response.currency,
+      amount: response.amount,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send('Unable to create order');
+  }
+});
+
 
 module.exports = router;
