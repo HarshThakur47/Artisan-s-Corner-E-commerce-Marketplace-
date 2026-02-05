@@ -4,6 +4,64 @@ import { saveShippingAddress, savePaymentMethod } from '../store/slices/cartSlic
 import { toast } from 'react-toastify';
 import { FaMapMarkerAlt, FaCreditCard } from 'react-icons/fa';
 
+import axios from 'axios';
+import { BASE_URL } from '../utils/config'; 
+import { loadRazorpayScript } from '../utils/razorpay';
+
+const handlePayment = async () => {
+    // 1. Load the Razorpay SDK
+    const res = await loadRazorpayScript();
+    if (!res) {
+      alert('Razorpay SDK failed to load. Are you online?');
+      return;
+    }
+
+    try {
+      // 2. Get the Razorpay Key from your Backend
+      // (This assumes you are logged in and have a token. If not, remove the config)
+      const { data: key } = await axios.get(`${BASE_URL}/orders/config/razorpay`);
+
+      // 3. Create a Razorpay Order (Get the Order ID)
+      // Change '500' to your actual amount: cart.totalPrice
+      const { data: order } = await axios.post(`${BASE_URL}/orders/razorpay`, {
+        amount: 500, // <--- REPLACE THIS with your actual cart total
+      });
+
+      // 4. Configure the Popup Options
+      const options = {
+        key: key, 
+        amount: order.amount,
+        currency: order.currency,
+        name: "Artisan's Corner",
+        description: "Handmade with Love",
+        order_id: order.id, 
+        handler: async function (response) {
+          // 5. SUCCESS! 
+          alert("Payment Successful! Payment ID: " + response.razorpay_payment_id);
+          
+          // TODO: Call your backend here to save the order as "Paid"
+          // e.g., dispatch(createOrder({ ...orderData, paymentResult: response }))
+        },
+        prefill: {
+          name: "Harshwardhan", // Replace with userInfo.name
+          email: "harsh@example.com", // Replace with userInfo.email
+          contact: "9999999999",
+        },
+        theme: {
+          color: "#3399cc",
+        },
+      };
+
+      // 5. Open the Popup
+      const paymentObject = new window.Razorpay(options);
+      paymentObject.open();
+
+    } catch (error) {
+      console.error("Payment Error:", error);
+      alert("Something went wrong with the payment.");
+    }
+  };
+
 const CheckoutPage = () => {
   const dispatch = useDispatch();
   const { cartItems, total, shippingAddress } = useSelector((state) => state.cart);
@@ -151,7 +209,7 @@ const CheckoutPage = () => {
               </div>
             </div>
             
-            <button className="btn-primary w-full">
+            <button className="btn-primary w-full" onClick={handlePayment}>
               Proceed to Payment
             </button>
           </div>
