@@ -42,11 +42,6 @@ export const cartSlice = createSlice({
       state.total = state.cartItems.reduce((acc, item) => acc + item.price * item.qty, 0);
       localStorage.setItem('cartItems', JSON.stringify(state.cartItems));
     },
-    clearCart: (state) => {
-      state.cartItems = [];
-      state.total = 0;
-      localStorage.removeItem('cartItems');
-    },
     saveShippingAddress: (state, action) => {
       state.shippingAddress = action.payload;
       localStorage.setItem('shippingAddress', JSON.stringify(action.payload));
