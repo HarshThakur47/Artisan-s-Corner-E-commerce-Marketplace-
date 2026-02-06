@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getUserOrders } from '../store/slices/orderSlice';
@@ -6,108 +6,81 @@ import { FaUser, FaTimes, FaCheck } from 'react-icons/fa';
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
-
-  // 1. Get User Info from Auth State
   const { user } = useSelector((state) => state.auth);
-
-  // 2. Get Order History from Order State
   const { orders, isLoading, isError, message } = useSelector((state) => state.order);
+  const [activeTab, setActiveTab] = useState('profile');
 
-  // 3. Fetch Orders when page loads
   useEffect(() => {
     dispatch(getUserOrders());
   }, [dispatch]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+    <div style={{ minHeight: '100vh', background: '#e8e4dc', paddingTop: '100px', paddingBottom: '80px' }}>
+      <div className="container max-w-7xl mx-auto px-4">
         
-        {/* Left Column: User Profile Card */}
-        <div className="md:col-span-1">
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-              <FaUser className="mr-2 text-primary-600" /> My Profile
-            </h2>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm text-gray-500 block">Name</label>
-                <p className="font-medium text-lg">{user?.name}</p>
-              </div>
-              
-              <div>
-                <label className="text-sm text-gray-500 block">Email</label>
-                <p className="font-medium text-lg text-gray-700">{user?.email}</p>
-              </div>
-
-              <div>
-                 <label className="text-sm text-gray-500 block">Account Type</label>
-                 <span className={`px-2 py-1 rounded text-sm ${user?.isAdmin ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}`}>
-                   {user?.isAdmin ? 'Admin' : 'Customer'}
-                 </span>
-              </div>
-            </div>
-          </div>
+        {/* Tab Navigation */}
+        <div style={{ display: 'flex', gap: '2rem', borderBottom: '2px solid rgba(0,0,0,0.06)', marginBottom: '3rem' }}>
+          {['profile', 'orders'].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              style={{
+                padding: '1rem 0', background: 'transparent', border: 'none', fontSize: '1rem',
+                fontWeight: '500', cursor: 'pointer',
+                color: activeTab === tab ? '#1a3a2e' : '#999',
+                borderBottom: activeTab === tab ? '2px solid #1a3a2e' : 'none'
+              }}
+            >
+              {tab === 'profile' ? 'My Profile' : 'My Orders'}
+            </button>
+          ))}
         </div>
 
-        {/* Right Column: Order History Table */}
-        <div className="md:col-span-3">
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">My Orders</h2>
+        {/* Profile Content */}
+        {activeTab === 'profile' && (
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(20px)',
+            borderRadius: '24px', padding: '2rem', maxWidth: '500px',
+            animation: 'fadeIn 0.4s ease'
+          }}>
+            <h2 className="text-2xl font-bold mb-6 flex items-center">
+              <FaUser className="mr-2 text-primary-600" /> My Profile
+            </h2>
+            <div className="space-y-4">
+              <div><label className="text-sm text-gray-500">Name</label><p className="font-medium text-lg">{user?.name}</p></div>
+              <div><label className="text-sm text-gray-500">Email</label><p className="font-medium text-lg">{user?.email}</p></div>
+              <div><span className={`px-2 py-1 rounded text-sm ${user?.isAdmin ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}`}>{user?.isAdmin ? 'Admin' : 'Customer'}</span></div>
+            </div>
+          </div>
+        )}
 
-            {isLoading ? (
-              <div className="flex justify-center py-8">
-                 <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
-              </div>
-            ) : isError ? (
-              <div className="text-red-500 bg-red-50 p-3 rounded">{message}</div>
-            ) : orders && orders.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                You haven't placed any orders yet. 
-                <Link to="/products" className="text-primary-600 ml-2 hover:underline">Start Shopping</Link>
-              </div>
+        {/* Orders Content */}
+        {activeTab === 'orders' && (
+          <div style={{
+             background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(20px)',
+             borderRadius: '24px', padding: '2rem', animation: 'fadeIn 0.4s ease'
+          }}>
+            <h2 className="text-2xl font-bold mb-6">My Orders</h2>
+            {isLoading ? <div className="text-center">Loading...</div> : orders?.length === 0 ? (
+              <div className="text-center text-gray-500">No orders yet. <Link to="/products" className="text-primary-600 underline">Shop Now</Link></div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                  <thead className="bg-gray-50/50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paid</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Delivered</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Paid</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Details</th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="divide-y divide-gray-200">
                     {orders.map((order) => (
                       <tr key={order._id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{order._id.substring(0, 10)}...</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.createdAt.substring(0, 10)}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹{order.totalPrice}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {order.isPaid ? (
-                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                              {order.paidAt.substring(0, 10)}
-                            </span>
-                          ) : (
-                            <FaTimes className="text-red-500" />
-                          )}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {order.isDelivered ? (
-                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                              {order.deliveredAt.substring(0, 10)}
-                            </span>
-                          ) : (
-                            <FaTimes className="text-red-500" />
-                          )}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <Link to={`/order/${order._id}`} className="text-primary-600 hover:text-primary-900 bg-gray-100 px-3 py-1 rounded hover:bg-gray-200 transition">
-                            Details
-                          </Link>
-                        </td>
+                        <td className="px-6 py-4 text-sm font-medium">{order._id.substring(0, 8)}...</td>
+                        <td className="px-6 py-4 text-sm">₹{order.totalPrice}</td>
+                        <td className="px-6 py-4">{order.isPaid ? <FaCheck className="text-green-500"/> : <FaTimes className="text-red-500"/>}</td>
+                        <td className="px-6 py-4"><Link to={`/order/${order._id}`} className="text-primary-600 hover:underline">View</Link></td>
                       </tr>
                     ))}
                   </tbody>
@@ -115,8 +88,9 @@ const ProfilePage = () => {
               </div>
             )}
           </div>
-        </div>
+        )}
       </div>
+      <style>{`@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }`}</style>
     </div>
   );
 };

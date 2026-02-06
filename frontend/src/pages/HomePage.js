@@ -1,248 +1,463 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getProducts } from '../store/slices/productSlice';
-import { FaArrowRight, FaStar, FaHeart, FaShoppingCart, FaGem, FaUsers, FaShieldAlt, FaTruck } from 'react-icons/fa';
+import { FaArrowRight, FaStar } from 'react-icons/fa';
 
 const HomePage = () => {
   const dispatch = useDispatch();
   const { products, isLoading } = useSelector((state) => state.product);
+  const [scrollY, setScrollY] = useState(0);
   
   useEffect(() => {
     dispatch(getProducts());
+    
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [dispatch]);
-  
-  const featuredProducts = products.slice(0, 6);
 
-  const features = [
-    {
-      icon: <FaGem className="text-3xl text-primary-500" />,
-      title: "Handcrafted Excellence",
-      description: "Each piece is carefully crafted by skilled artisans with years of experience."
-    },
-    {
-      icon: <FaUsers className="text-3xl text-secondary-500" />,
-      title: "Support Local Artisans",
-      description: "Your purchase directly supports local craftsmen and their families."
-    },
-    {
-      icon: <FaShieldAlt className="text-3xl text-warning-500" />,
-      title: "Quality Guaranteed",
-      description: "Every product comes with our quality assurance and satisfaction guarantee."
-    },
-    {
-      icon: <FaTruck className="text-3xl text-success-500" />,
-      title: "Fast Delivery",
-      description: "Quick and secure delivery across India with real-time tracking."
-    }
-  ];
+  useEffect(() => {
+    // Scroll reveal animation
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.scroll-reveal').forEach(el => {
+      observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, [products]);
+  
+  const featuredProducts = products.slice(0, 4);
+  const categories = ['Handmade Crafts', 'Pottery & Ceramics', 'Textiles', 'Jewelry'];
 
   return (
-    <div className="min-h-screen">
+    <div style={{ background: '#e8e4dc' }}>
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary-50 via-surface-0 to-secondary-50 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary-500/10 to-secondary-500/10"></div>
-        <div className="container relative z-10">
-          <div className="flex flex-col lg:flex-row items-center py-20 gap-12">
-            <div className="flex-1 text-center lg:text-left">
-              <h1 className="text-4xl lg:text-6xl font-bold text-neutral-900 mb-6 leading-tight">
-                Discover
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-secondary-600">
-                  Handcrafted
-                </span>
-                Excellence
-              </h1>
-              <p className="text-xl text-neutral-600 mb-8 max-w-2xl mx-auto lg:mx-0">
-                Explore our curated collection of unique, handmade crafts from talented artisans across India. 
-                Each piece tells a story of tradition, skill, and passion.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Link
-                  to="/products"
-                  className="btn-primary text-lg px-8 py-4 inline-flex items-center gap-2 group"
-                >
-                  Explore Products
-                  <FaArrowRight className="group-hover:translate-x-1 transition-transform duration-200" />
-                </Link>
-                <Link
-                  to="/about"
-                  className="btn-outline text-lg px-8 py-4"
-                >
-                  Learn More
-                </Link>
-              </div>
+      <section 
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          position: 'relative',
+          overflow: 'hidden',
+          paddingTop: '80px'
+        }}
+      >
+        {/* Background decorative elements */}
+        <div 
+          style={{
+            position: 'absolute',
+            top: '20%',
+            right: '10%',
+            width: '400px',
+            height: '400px',
+            background: 'rgba(255,255,255,0.3)',
+            borderRadius: '50%',
+            filter: 'blur(100px)',
+            transform: `translateY(${scrollY * 0.2}px)`
+          }}
+        />
+        <div 
+          style={{
+            position: 'absolute',
+            bottom: '10%',
+            left: '5%',
+            width: '300px',
+            height: '300px',
+            background: 'rgba(26, 58, 46, 0.1)',
+            borderRadius: '50%',
+            filter: 'blur(80px)',
+            transform: `translateY(${scrollY * -0.15}px)`
+          }}
+        />
+
+        <div className="container" style={{ position: 'relative', zIndex: 1 }}>
+          <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
+            <h1 
+              style={{
+                fontSize: 'clamp(3rem, 8vw, 5rem)',
+                fontWeight: '400',
+                color: '#2c2c2c',
+                marginBottom: '1.5rem',
+                lineHeight: '1.1',
+                letterSpacing: '-2px',
+                animation: 'fadeIn 1s ease'
+              }}
+            >
+              Handcrafted that Performs.
+              <br />
+              <span style={{ fontWeight: '300', opacity: 0.8 }}>Created for Artisan Lovers.</span>
+            </h1>
+            <p 
+              style={{
+                fontSize: '1.125rem',
+                color: '#5a5a5a',
+                marginBottom: '3rem',
+                lineHeight: '1.8',
+                animation: 'fadeIn 1s ease 0.2s backwards'
+              }}
+            >
+              Explore our curated collection of unique, handmade crafts from talented artisans. 
+              Each piece tells a story of tradition, skill, and passion.
+            </p>
+            <div 
+              style={{ 
+                display: 'flex', 
+                gap: '1rem', 
+                justifyContent: 'center',
+                flexWrap: 'wrap',
+                animation: 'fadeIn 1s ease 0.4s backwards'
+              }}
+            >
+              <Link to="/products" className="btn-primary">
+                Explore Products <FaArrowRight />
+              </Link>
+              <Link to="/about" className="btn-outline">
+                Learn More
+              </Link>
             </div>
-            <div className="flex-1">
-              <div className="relative">
-                <div className="w-80 h-80 mx-auto bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full opacity-20 blur-3xl"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-24 h-24 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-2xl flex items-center justify-center shadow-elevation-4 mb-4">
-                      <FaGem className="text-white text-3xl" />
-                    </div>
-                    <p className="text-neutral-600 font-medium">Artisan's Corner</p>
-                  </div>
-                </div>
-              </div>
+          </div>
+
+          {/* Scroll indicator */}
+          <div 
+            style={{
+              position: 'absolute',
+              bottom: '40px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              animation: 'fadeIn 1s ease 0.6s backwards'
+            }}
+          >
+            <div 
+              style={{
+                width: '24px',
+                height: '36px',
+                border: '2px solid #2c2c2c',
+                borderRadius: '12px',
+                position: 'relative'
+              }}
+            >
+              <div 
+                style={{
+                  width: '4px',
+                  height: '8px',
+                  background: '#2c2c2c',
+                  borderRadius: '2px',
+                  position: 'absolute',
+                  top: '8px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  animation: 'scroll 1.5s ease infinite'
+                }}
+              />
             </div>
+            <style>{`
+              @keyframes scroll {
+                0%, 100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+                50% { opacity: 0.3; transform: translateX(-50%) translateY(8px); }
+              }
+            `}</style>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-20 bg-surface-0">
+      {/* Categories Section with hover cards */}
+      <section style={{ padding: '6rem 0' }} className="scroll-reveal">
         <div className="container">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-neutral-900 mb-4">
-              Why Choose Artisan's Corner?
-            </h2>
-            <p className="text-xl text-neutral-600 max-w-3xl mx-auto">
-              We're committed to bringing you the finest handmade crafts while supporting local artisans and preserving traditional craftsmanship.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <div key={index} className="card text-center group hover:scale-105 transition-transform duration-300">
-                <div className="mb-6 group-hover:scale-110 transition-transform duration-300">
-                  {feature.icon}
+          <h2 
+            style={{
+              fontSize: 'clamp(2rem, 5vw, 3rem)',
+              fontWeight: '400',
+              color: '#2c2c2c',
+              textAlign: 'center',
+              marginBottom: '4rem',
+              letterSpacing: '-1px'
+            }}
+          >
+            Explore Our Collections
+          </h2>
+          <div className="grid grid-cols-4">
+            {categories.map((category, index) => (
+              <Link
+                key={index}
+                to={`/products?category=${category}`}
+                style={{
+                  background: '#fff',
+                  borderRadius: '16px',
+                  padding: '3rem 2rem',
+                  textAlign: 'center',
+                  textDecoration: 'none',
+                  border: '1px solid rgba(0,0,0,0.06)',
+                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                  cursor: 'pointer'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-12px)';
+                  e.currentTarget.style.boxShadow = '0 20px 40px rgba(0,0,0,0.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+              >
+                <div 
+                  style={{
+                    width: '80px',
+                    height: '80px',
+                    background: '#e8e4dc',
+                    borderRadius: '50%',
+                    margin: '0 auto 1.5rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '2rem'
+                  }}
+                >
+                  {index === 0 && '🎨'}
+                  {index === 1 && '🏺'}
+                  {index === 2 && '🧵'}
+                  {index === 3 && '💎'}
                 </div>
-                <h3 className="text-xl font-semibold text-neutral-900 mb-3">
-                  {feature.title}
+                <h3 
+                  style={{
+                    fontSize: '1.125rem',
+                    fontWeight: '500',
+                    color: '#2c2c2c',
+                    marginBottom: '0.5rem'
+                  }}
+                >
+                  {category}
                 </h3>
-                <p className="text-neutral-600">
-                  {feature.description}
+                <p style={{ fontSize: '0.9rem', color: '#999', margin: 0 }}>
+                  Explore Collection →
                 </p>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
       {/* Featured Products Section */}
-      <section className="py-20 bg-surface-1">
+      <section style={{ padding: '6rem 0', background: '#f5f3ef' }} className="scroll-reveal">
         <div className="container">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-neutral-900 mb-4">
-              Featured Products
+          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+            <h2 
+              style={{
+                fontSize: 'clamp(2rem, 5vw, 3rem)',
+                fontWeight: '400',
+                color: '#2c2c2c',
+                marginBottom: '1rem',
+                letterSpacing: '-1px'
+              }}
+            >
+              New Products
             </h2>
-            <p className="text-xl text-neutral-600 max-w-3xl mx-auto">
-              Discover our handpicked selection of the finest handmade crafts from talented artisans.
-            </p>
+            <Link 
+              to="/products"
+              style={{
+                fontSize: '1rem',
+                color: '#2c2c2c',
+                textDecoration: 'none',
+                border: '1px solid #2c2c2c',
+                padding: '10px 24px',
+                borderRadius: '8px',
+                display: 'inline-block',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.background = '#2c2c2c';
+                e.target.style.color = '#fff';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = 'transparent';
+                e.target.style.color = '#2c2c2c';
+              }}
+            >
+              Shop now
+            </Link>
           </div>
 
           {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[1, 2, 3, 4, 5, 6].map((item) => (
-                <div key={item} className="card loading">
-                  <div className="h-48 bg-surface-2 rounded-lg mb-4"></div>
-                  <div className="h-4 bg-surface-2 rounded mb-2"></div>
-                  <div className="h-4 bg-surface-2 rounded w-3/4 mb-4"></div>
-                  <div className="h-8 bg-surface-2 rounded"></div>
+            <div className="grid grid-cols-4">
+              {[1, 2, 3, 4].map((item) => (
+                <div key={item} style={{ background: '#fff', borderRadius: '16px', padding: '1.5rem' }}>
+                  <div style={{ height: '280px', background: '#e8e4dc', borderRadius: '12px', marginBottom: '1rem' }} className="loading" />
+                  <div style={{ height: '20px', background: '#e8e4dc', borderRadius: '4px', marginBottom: '0.5rem' }} className="loading" />
+                  <div style={{ height: '20px', background: '#e8e4dc', borderRadius: '4px', width: '60%' }} className="loading" />
                 </div>
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-4">
               {featuredProducts.map((product) => (
-                <div key={product._id} className="card group">
-                  <div className="relative overflow-hidden rounded-lg mb-4">
+                <Link
+                  key={product._id}
+                  to={`/product/${product._id}`}
+                  style={{
+                    background: '#fff',
+                    borderRadius: '16px',
+                    padding: '1.5rem',
+                    textDecoration: 'none',
+                    border: '1px solid rgba(0,0,0,0.06)',
+                    transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                    position: 'relative'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-8px)';
+                    e.currentTarget.style.boxShadow = '0 16px 32px rgba(0,0,0,0.12)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
+                  {product.countInStock === 0 ? (
+                    <span className="badge-corner badge badge-sale">Out of Stock</span>
+                  ) : product.countInStock < 5 ? (
+                    <span className="badge-corner badge badge-new">NEW</span>
+                  ) : null}
+                  
+                  <div 
+                    style={{
+                      overflow: 'hidden',
+                      borderRadius: '12px',
+                      marginBottom: '1rem',
+                      height: '280px'
+                    }}
+                  >
                     <img
                       src={product.image}
                       alt={product.name}
-                      className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+                      }}
+                      onMouseEnter={(e) => e.target.style.transform = 'scale(1.08)'}
+                      onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
                     />
-                    <div className="absolute top-4 right-4">
-                      <button className="p-2 bg-surface-0/80 backdrop-blur-sm rounded-full hover:bg-surface-0 transition-colors duration-200">
-                        <FaHeart className="text-neutral-400 hover:text-error-500 transition-colors duration-200" />
-                      </button>
-                    </div>
-                    {product.countInStock === 0 && (
-                      <div className="absolute inset-0 bg-neutral-900/50 flex items-center justify-center">
-                        <span className="text-white font-semibold">Out of Stock</span>
-                      </div>
-                    )}
                   </div>
                   
-                  <div className="mb-4">
-                    <h3 className="text-lg font-semibold text-neutral-900 mb-2 group-hover:text-primary-600 transition-colors duration-200">
-                      {product.name}
-                    </h3>
-                    <p className="text-neutral-600 text-sm mb-3 line-clamp-2">
-                      {product.description}
-                    </p>
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => (
-                          <FaStar
-                            key={i}
-                            className={`text-sm ${
-                              i < Math.floor(product.rating || 0)
-                                ? 'text-warning-500'
-                                : 'text-neutral-300'
-                            }`}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-sm text-neutral-500">
-                        ({product.numReviews || 0} reviews)
-                      </span>
+                  <h3 
+                    style={{
+                      fontSize: '1rem',
+                      fontWeight: '500',
+                      color: '#2c2c2c',
+                      marginBottom: '0.5rem'
+                    }}
+                  >
+                    {product.name}
+                  </h3>
+                  
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+                    <div style={{ display: 'flex', gap: '2px' }}>
+                      {[...Array(5)].map((_, i) => (
+                        <FaStar
+                          key={i}
+                          size={12}
+                          color={i < Math.floor(product.rating || 0) ? '#c97d3f' : '#d4d0c8'}
+                        />
+                      ))}
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-2xl font-bold text-primary-600">
-                        ₹{product.price}
-                      </span>
-                      <Link
-                        to={`/product/${product._id}`}
-                        className="btn-primary text-sm px-4 py-2 inline-flex items-center gap-2"
-                      >
-                        <FaShoppingCart />
-                        View Details
-                      </Link>
-                    </div>
+                    <span style={{ fontSize: '0.875rem', color: '#999' }}>
+                      ({product.numReviews || 0})
+                    </span>
                   </div>
-                </div>
+                  
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <p style={{ fontSize: '1.25rem', fontWeight: '600', color: '#2c2c2c', margin: 0 }}>
+                      From ₹{product.price}
+                    </p>
+                  </div>
+                </Link>
               ))}
             </div>
           )}
-
-          <div className="text-center mt-12">
-            <Link
-              to="/products"
-              className="btn-outline text-lg px-8 py-4 inline-flex items-center gap-2 group"
-            >
-              View All Products
-              <FaArrowRight className="group-hover:translate-x-1 transition-transform duration-200" />
-            </Link>
-          </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-primary-600 to-secondary-600">
+      <section style={{ padding: '8rem 0' }} className="scroll-reveal">
         <div className="container">
-          <div className="text-center text-white">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-6">
-              Ready to Discover Amazing Handcrafted Products?
+          <div 
+            style={{
+              background: '#1a3a2e',
+              borderRadius: '24px',
+              padding: '5rem 3rem',
+              textAlign: 'center',
+              position: 'relative',
+              overflow: 'hidden'
+            }}
+          >
+            <div 
+              style={{
+                position: 'absolute',
+                top: '-50px',
+                right: '-50px',
+                width: '300px',
+                height: '300px',
+                background: 'rgba(255,255,255,0.05)',
+                borderRadius: '50%',
+                filter: 'blur(60px)'
+              }}
+            />
+            <h2 
+              style={{
+                fontSize: 'clamp(2rem, 5vw, 3rem)',
+                fontWeight: '400',
+                color: '#fff',
+                marginBottom: '1.5rem',
+                letterSpacing: '-1px',
+                position: 'relative',
+                zIndex: 1
+              }}
+            >
+              Set the standard for artisan excellence in your home.
+              <br />
+              Let us help you make your space memorable.
             </h2>
-            <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-              Join thousands of customers who trust Artisan's Corner for unique, high-quality handmade crafts.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                to="/register"
-                className="bg-white text-primary-600 hover:bg-surface-1 font-semibold px-8 py-4 rounded-xl transition-all duration-200 inline-flex items-center gap-2 group"
-              >
-                Get Started
-                <FaArrowRight className="group-hover:translate-x-1 transition-transform duration-200" />
-              </Link>
-              <Link
-                to="/products"
-                className="border-2 border-white text-white hover:bg-white hover:text-primary-600 font-semibold px-8 py-4 rounded-xl transition-all duration-200"
-              >
-                Browse Products
-              </Link>
-            </div>
+            <Link 
+              to="/products"
+              style={{
+                background: '#fff',
+                color: '#1a3a2e',
+                padding: '16px 40px',
+                borderRadius: '8px',
+                fontSize: '15px',
+                fontWeight: '600',
+                textDecoration: 'none',
+                display: 'inline-block',
+                transition: 'all 0.3s ease',
+                position: 'relative',
+                zIndex: 1
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = 'translateY(-4px)';
+                e.target.style.boxShadow = '0 12px 24px rgba(0,0,0,0.2)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = 'translateY(0)';
+                e.target.style.boxShadow = 'none';
+              }}
+            >
+              See products
+            </Link>
           </div>
         </div>
       </section>

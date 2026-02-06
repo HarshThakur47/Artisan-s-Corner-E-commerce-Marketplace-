@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { register, reset } from '../store/slices/authSlice';
 import { toast } from 'react-toastify';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaEye, FaEyeSlash, FaUser, FaEnvelope, FaLock } from 'react-icons/fa';
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +12,7 @@ const RegisterPage = () => {
     password: '',
     confirmPassword: '',
   });
+  const [focusedField, setFocusedField] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -27,11 +28,9 @@ const RegisterPage = () => {
     if (isError) {
       toast.error(message);
     }
-
     if (isSuccess || user) {
       navigate('/');
     }
-
     dispatch(reset());
   }, [user, isError, isSuccess, message, navigate, dispatch]);
 
@@ -44,238 +43,278 @@ const RegisterPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     if (!name || !email || !password || !confirmPassword) {
       toast.error('Please fill in all fields');
       return;
     }
-
     if (password !== confirmPassword) {
       toast.error('Passwords do not match');
       return;
     }
-
     if (password.length < 6) {
       toast.error('Password must be at least 6 characters');
       return;
     }
-
-    const userData = {
-      name,
-      email,
-      password,
-    };
-
+    const userData = { name, email, password };
     dispatch(register(userData));
   };
 
+  const createRipple = (e) => {
+    const button = e.currentTarget;
+    const ripple = document.createElement('span');
+    const rect = button.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const x = e.clientX - rect.left - size / 2;
+    const y = e.clientY - rect.top - size / 2;
+
+    ripple.style.cssText = `
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.6);
+      width: ${size}px;
+      height: ${size}px;
+      left: ${x}px;
+      top: ${y}px;
+      animation: ripple 0.6s ease-out;
+      pointer-events: none;
+    `;
+    button.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 600);
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="flex justify-center">
-          <div className="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-xl">A</span>
-          </div>
-        </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Create your account
-        </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          Or{' '}
-          <Link
-            to="/login"
-            className="font-medium text-primary-600 hover:text-primary-500"
-          >
-            sign in to your existing account
-          </Link>
-        </p>
-      </div>
+    <div
+      style={{
+        minHeight: '100vh',
+        background: '#e8e4dc',
+        paddingTop: '100px',
+        paddingBottom: '80px',
+        position: 'relative',
+        overflow: 'hidden'
+      }}
+    >
+      {/* Decorative background elements */}
+      <div style={{
+        position: 'absolute', top: '10%', right: '10%', width: '400px', height: '400px',
+        background: 'rgba(26, 58, 46, 0.08)', borderRadius: '50%', filter: 'blur(80px)',
+        animation: 'float 8s ease-in-out infinite'
+      }} />
+      <div style={{
+        position: 'absolute', bottom: '10%', left: '5%', width: '300px', height: '300px',
+        background: 'rgba(201, 125, 63, 0.06)', borderRadius: '50%', filter: 'blur(60px)',
+        animation: 'float 6s ease-in-out infinite reverse'
+      }} />
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div>
-              <label htmlFor="name" className="form-label">
-                Full Name
-              </label>
-              <div className="mt-1">
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  autoComplete="name"
-                  required
-                  value={name}
-                  onChange={handleChange}
-                  className="input-field"
-                  placeholder="Enter your full name"
-                />
-              </div>
-            </div>
+      <style>{`
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-30px); } }
+        @keyframes ripple { to { transform: scale(4); opacity: 0; } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+      `}</style>
 
-            <div>
-              <label htmlFor="email" className="form-label">
-                Email address
-              </label>
-              <div className="mt-1">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={handleChange}
-                  className="input-field"
-                  placeholder="Enter your email"
-                />
+      <div className="container" style={{ position: 'relative', zIndex: 1 }}>
+        <div style={{ maxWidth: '480px', margin: '0 auto', animation: 'slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1)' }}>
+          {/* Glass Card */}
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.85)',
+            backdropFilter: 'blur(20px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+            borderRadius: '24px',
+            padding: '3rem',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.12), 0 0 0 1px rgba(255,255,255,0.8)',
+            border: '1px solid rgba(255, 255, 255, 0.8)'
+          }}>
+            
+            {/* Header */}
+            <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+              <div style={{
+                width: '64px', height: '64px', background: '#1a3a2e', borderRadius: '16px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem'
+              }}>
+                <span style={{ color: '#e8e4dc', fontSize: '24px', fontWeight: 'bold' }}>A</span>
               </div>
+              <h1 style={{ fontSize: '2rem', fontWeight: '600', color: '#2c2c2c', marginBottom: '0.5rem' }}>
+                Create Account
+              </h1>
+              <p style={{ fontSize: '1rem', color: '#5a5a5a' }}>Join the Artisan's Corner community</p>
             </div>
 
-            <div>
-              <label htmlFor="password" className="form-label">
-                Password
-              </label>
-              <div className="mt-1 relative">
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete="new-password"
-                  required
-                  value={password}
-                  onChange={handleChange}
-                  className="input-field pr-10"
-                  placeholder="Enter your password"
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <FaEyeSlash className="h-5 w-5 text-gray-400" />
-                  ) : (
-                    <FaEye className="h-5 w-5 text-gray-400" />
-                  )}
-                </button>
+            <form onSubmit={handleSubmit}>
+              
+              {/* Name Field */}
+              <div style={{ marginBottom: '1.5rem', position: 'relative' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#2c2c2c', marginBottom: '0.5rem' }}>
+                  Full Name
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <div style={{
+                    position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)',
+                    transition: 'all 0.3s ease', color: focusedField === 'name' ? '#1a3a2e' : '#999'
+                  }}>
+                    <FaUser size={16} />
+                  </div>
+                  <input
+                    type="text"
+                    name="name"
+                    value={name}
+                    onChange={handleChange}
+                    onFocus={() => setFocusedField('name')}
+                    onBlur={() => setFocusedField(null)}
+                    placeholder="Enter your full name"
+                    style={{
+                      width: '100%', padding: '14px 16px 14px 48px',
+                      border: `2px solid ${focusedField === 'name' ? '#2c2c2c' : '#d4d0c8'}`,
+                      borderRadius: '12px', fontSize: '15px', transition: 'all 0.3s ease',
+                      outline: 'none', background: focusedField === 'name' ? 'rgba(26, 58, 46, 0.02)' : '#fff',
+                      boxShadow: focusedField === 'name' ? '0 0 0 4px rgba(44,44,44,0.08)' : 'none'
+                    }}
+                  />
+                </div>
               </div>
-            </div>
-                  <br/>
-            <div>
-              <label htmlFor="confirmPassword" className="form-label">
-                Confirm Password
-              </label>
-              <div className="mt-1 relative">
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  autoComplete="new-password"
-                  required
-                  value={confirmPassword}
-                  onChange={handleChange}
-                  className="input-field pr-10"
-                  placeholder="Confirm your password"
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  {showConfirmPassword ? (
-                    <FaEyeSlash className="h-5 w-5 text-gray-400" />
-                  ) : (
-                    <FaEye className="h-5 w-5 text-gray-400" />
-                  )}
-                </button>
-              </div>
-            </div>
-                  <br/>
-            <div className="flex items-center">
-              <input
-                id="agree-terms"
-                name="agree-terms"
-                type="checkbox"
-                required
-                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
-              />
-              <label htmlFor="agree-terms" className="ml-2 block text-sm text-gray-900">
-                I agree to the{' '}
-                <a href="#" className="text-primary-600 hover:text-primary-500">
-                  Terms of Service
-                </a>{' '}
-                and{' '}
-                <a href="#" className="text-primary-600 hover:text-primary-500">
-                  Privacy Policy
-                </a>
-              </label>
-            </div>
 
-            <div>
+              {/* Email Field */}
+              <div style={{ marginBottom: '1.5rem', position: 'relative' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#2c2c2c', marginBottom: '0.5rem' }}>
+                  Email Address
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <div style={{
+                    position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)',
+                    transition: 'all 0.3s ease', color: focusedField === 'email' ? '#1a3a2e' : '#999'
+                  }}>
+                    <FaEnvelope size={16} />
+                  </div>
+                  <input
+                    type="email"
+                    name="email"
+                    value={email}
+                    onChange={handleChange}
+                    onFocus={() => setFocusedField('email')}
+                    onBlur={() => setFocusedField(null)}
+                    placeholder="Enter your email"
+                    style={{
+                      width: '100%', padding: '14px 16px 14px 48px',
+                      border: `2px solid ${focusedField === 'email' ? '#2c2c2c' : '#d4d0c8'}`,
+                      borderRadius: '12px', fontSize: '15px', transition: 'all 0.3s ease',
+                      outline: 'none', background: focusedField === 'email' ? 'rgba(26, 58, 46, 0.02)' : '#fff',
+                      boxShadow: focusedField === 'email' ? '0 0 0 4px rgba(44,44,44,0.08)' : 'none'
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Password Field */}
+              <div style={{ marginBottom: '1.5rem', position: 'relative' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#2c2c2c', marginBottom: '0.5rem' }}>
+                  Password
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <div style={{
+                    position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)',
+                    transition: 'all 0.3s ease', color: focusedField === 'password' ? '#1a3a2e' : '#999'
+                  }}>
+                    <FaLock size={16} />
+                  </div>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    value={password}
+                    onChange={handleChange}
+                    onFocus={() => setFocusedField('password')}
+                    onBlur={() => setFocusedField(null)}
+                    placeholder="Enter your password"
+                    style={{
+                      width: '100%', padding: '14px 48px 14px 48px',
+                      border: `2px solid ${focusedField === 'password' ? '#2c2c2c' : '#d4d0c8'}`,
+                      borderRadius: '12px', fontSize: '15px', transition: 'all 0.3s ease',
+                      outline: 'none', background: focusedField === 'password' ? 'rgba(26, 58, 46, 0.02)' : '#fff',
+                      boxShadow: focusedField === 'password' ? '0 0 0 4px rgba(44,44,44,0.08)' : 'none'
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                      position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)',
+                      background: 'transparent', border: 'none', cursor: 'pointer', color: '#999',
+                    }}
+                  >
+                    {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Confirm Password Field */}
+              <div style={{ marginBottom: '1.5rem', position: 'relative' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#2c2c2c', marginBottom: '0.5rem' }}>
+                  Confirm Password
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <div style={{
+                    position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)',
+                    transition: 'all 0.3s ease', color: focusedField === 'confirmPassword' ? '#1a3a2e' : '#999'
+                  }}>
+                    <FaLock size={16} />
+                  </div>
+                  <input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    name="confirmPassword"
+                    value={confirmPassword}
+                    onChange={handleChange}
+                    onFocus={() => setFocusedField('confirmPassword')}
+                    onBlur={() => setFocusedField(null)}
+                    placeholder="Confirm your password"
+                    style={{
+                      width: '100%', padding: '14px 48px 14px 48px',
+                      border: `2px solid ${focusedField === 'confirmPassword' ? '#2c2c2c' : '#d4d0c8'}`,
+                      borderRadius: '12px', fontSize: '15px', transition: 'all 0.3s ease',
+                      outline: 'none', background: focusedField === 'confirmPassword' ? 'rgba(26, 58, 46, 0.02)' : '#fff',
+                      boxShadow: focusedField === 'confirmPassword' ? '0 0 0 4px rgba(44,44,44,0.08)' : 'none'
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    style={{
+                      position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)',
+                      background: 'transparent', border: 'none', cursor: 'pointer', color: '#999',
+                    }}
+                  >
+                    {showConfirmPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Submit Button */}
               <button
                 type="submit"
+                onClick={createRipple}
                 disabled={isLoading}
-                className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn-primary"
+                style={{
+                  width: '100%', padding: '16px', fontSize: '16px', fontWeight: '600',
+                  position: 'relative', overflow: 'hidden', opacity: isLoading ? 0.7 : 1,
+                  cursor: isLoading ? 'not-allowed' : 'pointer'
+                }}
               >
-                {isLoading ? 'Creating account...' : 'Create account'}
+                {isLoading ? (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                    <div style={{
+                      width: '16px', height: '16px', border: '2px solid rgba(255,255,255,0.3)',
+                      borderTop: '2px solid #fff', borderRadius: '50%', animation: 'spin 0.6s linear infinite'
+                    }} />
+                    Creating Account...
+                  </div>
+                ) : 'Create Account'}
               </button>
-            </div>
-          </form>
+            </form>
 
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Or continue with</span>
-              </div>
-            </div>
-
-            <div className="mt-6 grid grid-cols-2 gap-3">
-              <div>
-                <a
-                  href="#"
-                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                >
-                  <span className="sr-only">Sign up with Google</span>
-                  <svg className="w-5 h-5" viewBox="0 0 24 24">
-                    <path
-                      fill="currentColor"
-                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                    />
-                    <path
-                      fill="currentColor"
-                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                    />
-                    <path
-                      fill="currentColor"
-                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                    />
-                    <path
-                      fill="currentColor"
-                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                    />
-                  </svg>
-                </a>
-              </div>
-
-              <div>
-                <a
-                  href="#"
-                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                >
-                  <span className="sr-only">Sign up with Facebook</span>
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fillRule="evenodd"
-                      d="M20 10C20 4.477 15.523 0 10 0S0 4.477 0 10c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V10h2.54V7.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V10h2.773l-.443 2.89h-2.33v6.988C16.343 19.128 20 14.991 20 10z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </a>
-              </div>
+            <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+              <p style={{ fontSize: '15px', color: '#5a5a5a' }}>
+                Already have an account?{' '}
+                <Link to="/login" style={{ color: '#1a3a2e', fontWeight: '600', textDecoration: 'none' }}>
+                  Sign in
+                </Link>
+              </p>
             </div>
           </div>
         </div>

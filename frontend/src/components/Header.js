@@ -1,248 +1,528 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../store/slices/authSlice';
-import { FaShoppingCart, FaUser, FaSearch, FaBars, FaTimes, FaCrown } from 'react-icons/fa';
+import { FaShoppingCart, FaUser, FaBars, FaTimes } from 'react-icons/fa';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [scrolled, setScrolled] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  
+  const userMenuRef = useRef(null);
+  const mobileMenuRef = useRef(null);
   
   const { user } = useSelector((state) => state.auth);
   const { cartItems } = useSelector((state) => state.cart);
   
   const cartItemsCount = cartItems.reduce((total, item) => total + item.qty, 0);
+
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Handle click outside to close menus
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setIsUserMenuOpen(false);
+      }
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+        const isMobileMenuButton = event.target.closest('.mobile-menu-button');
+        if (!isMobileMenuButton) {
+          setIsMenuOpen(false);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
   
   const handleLogout = () => {
     dispatch(logout());
+    setIsUserMenuOpen(false);
     navigate('/');
-  };
-  
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
-    }
   };
 
   return (
-    <header className="bg-surface shadow-elevation-2 sticky top-0 z-50">
+    <header 
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        scrolled ? 'bg-white/80 backdrop-blur-xl shadow-sm' : 'bg-transparent'
+      }`}
+      style={{
+        borderBottom: scrolled ? '1px solid rgba(0,0,0,0.06)' : 'none'
+      }}
+    >
       <div className="container">
-        <div className="flex items-center justify-between p-4">
+        <div className="flex items-center justify-between py-4">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center shadow-elevation-2 group-hover:shadow-elevation-3 transition-all duration-300">
-              <FaCrown className="text-white text-lg" />
+          <Link 
+            to="/" 
+            className="flex items-center gap-2 group"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <div 
+              style={{
+                width: '40px',
+                height: '40px',
+                background: '#2c2c2c',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+              }}
+              className="group-hover:scale-105 group-hover:rotate-3"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#e8e4dc"/>
+                <path d="M2 17L12 22L22 17M2 12L12 17L22 12" stroke="#e8e4dc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-neutral-900 group-hover:text-primary-600 transition-colors duration-200">
-                Artisan's Corner
-              </h1>
-              <p className="text-xs text-neutral-500 font-medium uppercase tracking-wider">
-                Handcrafted Excellence
-              </p>
-            </div>
+            <span 
+              style={{
+                fontSize: '1.25rem',
+                fontWeight: '500',
+                color: '#2c2c2c',
+                letterSpacing: '0.5px',
+                transition: 'color 0.3s ease'
+              }}
+              className="group-hover:text-green"
+            >
+              Artisan Corner
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
-            <Link 
-              to="/" 
-              className="text-neutral-700 hover:text-primary-600 font-medium transition-colors duration-200 relative group"
-            >
-              Home
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300"></span>
-            </Link>
-            <Link 
-              to="/products" 
-              className="text-neutral-700 hover:text-primary-600 font-medium transition-colors duration-200 relative group"
-            >
-              Products
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300"></span>
-            </Link>
-            <Link 
-              to="/about" 
-              className="text-neutral-700 hover:text-primary-600 font-medium transition-colors duration-200 relative group"
-            >
-              About
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300"></span>
-            </Link>
-            <Link 
-              to="/contact" 
-              className="text-neutral-700 hover:text-primary-600 font-medium transition-colors duration-200 relative group"
-            >
-              Contact
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300"></span>
-            </Link>
+          <nav className="hidden lg:flex items-center gap-10">
+            {[
+              { name: 'Shop', path: '/products' },
+              { name: 'About', path: '/about' },
+              { name: 'Contact', path: '/contact' }
+            ].map((item) => (
+              <Link
+                key={item.name}
+                to={item.path}
+                style={{
+                  color: '#2c2c2c',
+                  fontSize: '15px',
+                  fontWeight: '400',
+                  textDecoration: 'none',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  position: 'relative',
+                  padding: '8px 0'
+                }}
+                className="nav-link"
+              >
+                {item.name}
+                <span 
+                  style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    width: 0,
+                    height: '2px',
+                    background: '#1a3a2e',
+                    transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                  }}
+                  className="nav-underline"
+                />
+              </Link>
+            ))}
           </nav>
 
-          {/* Search Bar */}
-          <div className="hidden lg:flex flex-1 max-w-md mx-8">
-            <form onSubmit={handleSearch} className="relative w-full">
-              <input
-                type="text"
-                placeholder="Search for handmade crafts..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-surface-1 border-2 border-surface-3 rounded-xl focus:border-primary-500 focus:outline-none transition-all duration-200 text-neutral-700 placeholder-neutral-400"
-              />
-              <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-neutral-400" />
-              <button
-                type="submit"
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-primary-500 hover:bg-primary-600 text-white p-2 rounded-lg transition-colors duration-200"
-              >
-                <FaSearch className="text-sm" />
-              </button>
-            </form>
-          </div>
+          <style>{`
+            .nav-link:hover {
+              color: #1a3a2e;
+            }
+            .nav-link:hover .nav-underline {
+              width: 100%;
+            }
+          `}</style>
 
           {/* Right Side Actions */}
           <div className="flex items-center gap-4">
-            {/* Cart */}
+            {/* Cart Icon with ripple effect */}
             <Link 
-              to="/cart" 
-              className="relative p-3 bg-surface-1 hover:bg-surface-2 rounded-xl transition-all duration-200 group"
+              to="/cart"
+              style={{
+                position: 'relative',
+                padding: '10px',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                borderRadius: '12px'
+              }}
+              className="cart-button"
             >
-              <FaShoppingCart className="text-neutral-600 group-hover:text-primary-600 text-lg transition-colors duration-200" />
+              <FaShoppingCart size={20} color="#2c2c2c" />
               {cartItemsCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-secondary-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-bounce">
+                <span 
+                  style={{
+                    position: 'absolute',
+                    top: '2px',
+                    right: '2px',
+                    background: '#2c2c2c',
+                    color: '#fff',
+                    fontSize: '11px',
+                    fontWeight: '600',
+                    borderRadius: '50%',
+                    width: '18px',
+                    height: '18px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    animation: 'pulse-scale 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                  }}
+                >
                   {cartItemsCount}
                 </span>
               )}
             </Link>
 
+            <style>{`
+              .cart-button:hover {
+                background: rgba(0,0,0,0.04);
+                transform: scale(1.05);
+              }
+              @keyframes pulse-scale {
+                0%, 100% {
+                  transform: scale(1);
+                }
+                50% {
+                  transform: scale(1.1);
+                }
+              }
+            `}</style>
+
             {/* User Menu */}
             {user ? (
-              <div className="relative">
+              <div style={{ position: 'relative' }} ref={userMenuRef}>
                 <button
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  className="flex items-center gap-2 p-3 bg-surface-1 hover:bg-surface-2 rounded-xl transition-all duration-200 group"
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  style={{
+                    padding: '8px',
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    borderRadius: '50%'
+                  }}
+                  className="user-menu-button"
                 >
-                  <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center">
-                    <FaUser className="text-white text-sm" />
+                  <div 
+                    style={{
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '50%',
+                      background: '#1a3a2e',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                    }}
+                    className="user-avatar"
+                  >
+                    <FaUser size={16} color="#fff" />
                   </div>
-                  <span className="hidden sm:block text-neutral-700 group-hover:text-primary-600 font-medium transition-colors duration-200">
-                    {user.name}
-                  </span>
                 </button>
 
-                {/* Dropdown Menu */}
-                {isMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-surface-0 rounded-xl shadow-elevation-3 border border-surface-3 py-2 z-50 animate-fade-in">
-                    <Link
-                      to="/profile"
-                      className="block px-4 py-3 text-neutral-700 hover:bg-surface-1 hover:text-primary-600 transition-colors duration-200"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Profile
-                    </Link>
-                    {user.isAdmin && (
+                <style>{`
+                  .user-menu-button:hover .user-avatar {
+                    transform: scale(1.1);
+                    box-shadow: 0 4px 12px rgba(26, 58, 46, 0.3);
+                  }
+                `}</style>
+
+                {/* User Dropdown with Apple-style blur */}
+                {isUserMenuOpen && (
+                  <div 
+                    style={{
+                      position: 'absolute',
+                      right: 0,
+                      top: 'calc(100% + 12px)',
+                      background: 'rgba(255, 255, 255, 0.95)', 
+                      backdropFilter: 'blur(20px)',
+                      borderRadius: '16px',
+                      boxShadow: '0 20px 40px rgba(0,0,0,0.2)', 
+                      minWidth: '220px',
+                      border: '1px solid rgba(255, 255, 255, 0.8)',
+                      overflow: 'hidden',
+                      zIndex: 9999, 
+                      animation: 'slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                    }}
+                  >
+                    <style>{`
+                      @keyframes slideDown {
+                        from {
+                          opacity: 0;
+                          transform: translateY(-10px);
+                        }
+                        to {
+                          opacity: 1;
+                          transform: translateY(0);
+                        }
+                      }
+                    `}</style>
+                    
+                    <div style={{ 
+                      padding: '16px', 
+                      borderBottom: '1px solid rgba(0,0,0,0.06)',
+                      background: 'rgba(26, 58, 46, 0.04)'
+                    }}>
+                      <p style={{ fontSize: '14px', fontWeight: '600', color: '#2c2c2c', margin: 0 }}>
+                        {user.name}
+                      </p>
+                      <p style={{ fontSize: '12px', color: '#999', margin: 0, marginTop: '2px' }}>
+                        {user.email}
+                      </p>
+                    </div>
+                    
+                    <div style={{ padding: '8px' }}>
                       <Link
-                        to="/admin"
-                        className="block px-4 py-3 text-neutral-700 hover:bg-surface-1 hover:text-primary-600 transition-colors duration-200"
-                        onClick={() => setIsMenuOpen(false)}
+                        to="/profile"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        style={{
+                          display: 'block',
+                          padding: '12px 16px',
+                          color: '#2c2c2c',
+                          fontSize: '14px',
+                          textDecoration: 'none',
+                          transition: 'all 0.2s ease',
+                          borderRadius: '8px',
+                          fontWeight: '500'
+                        }}
+                        className="dropdown-item"
                       >
-                        Admin Dashboard
+                        My Profile
                       </Link>
-                    )}
-                    <button
-                      onClick={() => {
-                        handleLogout();
-                        setIsMenuOpen(false);
-                      }}
-                      className="block w-full text-left px-4 py-3 text-neutral-700 hover:bg-surface-1 hover:text-error-600 transition-colors duration-200"
-                    >
-                      Logout
-                    </button>
+                      {user.isAdmin && (
+                        <Link
+                          to="/admin"
+                          onClick={() => setIsUserMenuOpen(false)}
+                          style={{
+                            display: 'block',
+                            padding: '12px 16px',
+                            color: '#2c2c2c',
+                            fontSize: '14px',
+                            textDecoration: 'none',
+                            transition: 'all 0.2s ease',
+                            borderRadius: '8px',
+                            fontWeight: '500'
+                          }}
+                          className="dropdown-item"
+                        >
+                          Admin Dashboard
+                        </Link>
+                      )}
+                    </div>
+                    
+                    <div style={{ padding: '8px', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
+                      <button
+                        onClick={handleLogout}
+                        style={{
+                          width: '100%',
+                          padding: '12px 16px',
+                          background: 'transparent',
+                          border: 'none',
+                          color: '#c97d3f',
+                          fontSize: '14px',
+                          textAlign: 'left',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          borderRadius: '8px',
+                          fontWeight: '500'
+                        }}
+                        className="dropdown-item logout-item"
+                      >
+                        Logout
+                      </button>
+                    </div>
+
+                    <style>{`
+                      .dropdown-item:hover {
+                        background: rgba(26, 58, 46, 0.08);
+                        transform: translateX(4px);
+                      }
+                      .logout-item:hover {
+                        background: rgba(201, 125, 63, 0.1);
+                        transform: translateX(4px);
+                      }
+                    `}</style>
                   </div>
                 )}
               </div>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="hidden sm:flex items-center gap-3">
                 <Link
                   to="/login"
-                  className="btn-outline text-sm px-4 py-2"
+                  style={{
+                    padding: '10px 20px',
+                    color: '#2c2c2c',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    textDecoration: 'none',
+                    borderRadius: '8px',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                  }}
+                  className="login-button"
                 >
                   Login
                 </Link>
                 <Link
                   to="/register"
-                  className="btn-primary text-sm px-4 py-2"
+                  className="btn-primary"
+                  style={{
+                    fontSize: '14px',
+                    padding: '10px 24px'
+                  }}
                 >
                   Sign Up
                 </Link>
               </div>
             )}
 
-            {/* Mobile Menu Button */}
+            <style>{`
+              .login-button:hover {
+                background: rgba(0,0,0,0.04);
+                transform: translateY(-2px);
+              }
+            `}</style>
+
+            {/* Mobile Menu Toggle */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 bg-surface-1 hover:bg-surface-2 rounded-xl transition-all duration-200"
+              className="lg:hidden mobile-menu-button"
+              style={{
+                background: 'transparent',
+                border: 'none',
+                padding: '8px',
+                cursor: 'pointer',
+                borderRadius: '8px',
+                transition: 'all 0.3s ease'
+              }}
             >
-              {isMenuOpen ? (
-                <FaTimes className="text-neutral-600 text-lg" />
-              ) : (
-                <FaBars className="text-neutral-600 text-lg" />
-              )}
+              <div style={{ position: 'relative', width: '24px', height: '24px' }}>
+                <div style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: `translate(-50%, -50%) ${isMenuOpen ? 'rotate(0deg)' : 'rotate(0deg)'}`,
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  opacity: isMenuOpen ? 0 : 1
+                }}>
+                  <FaBars size={24} color="#2c2c2c" />
+                </div>
+                <div style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: `translate(-50%, -50%) ${isMenuOpen ? 'rotate(90deg)' : 'rotate(-90deg)'}`,
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  opacity: isMenuOpen ? 1 : 0
+                }}>
+                  <FaTimes size={24} color="#2c2c2c" />
+                </div>
+              </div>
             </button>
+
+            <style>{`
+              .mobile-menu-button:hover {
+                background: rgba(0,0,0,0.04);
+              }
+            `}</style>
           </div>
         </div>
 
-        {/* Mobile Search */}
-        <div className="lg:hidden px-4 pb-4">
-          <form onSubmit={handleSearch} className="relative">
-            <input
-              type="text"
-              placeholder="Search for handmade crafts..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-surface-1 border-2 border-surface-3 rounded-xl focus:border-primary-500 focus:outline-none transition-all duration-200 text-neutral-700 placeholder-neutral-400"
-            />
-            <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-neutral-400" />
-            <button
-              type="submit"
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-primary-500 hover:bg-primary-600 text-white p-2 rounded-lg transition-colors duration-200"
-            >
-              <FaSearch className="text-sm" />
-            </button>
-          </form>
-        </div>
-
-        {/* Mobile Menu */}
+        {/* Mobile Menu with Apple blur */}
         {isMenuOpen && (
-          <div className="md:hidden bg-surface-0 border-t border-surface-3 animate-slide-up">
-            <nav className="px-4 py-6 space-y-4">
-              <Link
-                to="/"
-                className="block py-3 text-neutral-700 hover:text-primary-600 font-medium transition-colors duration-200"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Home
-              </Link>
-              <Link
-                to="/products"
-                className="block py-3 text-neutral-700 hover:text-primary-600 font-medium transition-colors duration-200"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Products
-              </Link>
-              <Link
-                to="/about"
-                className="block py-3 text-neutral-700 hover:text-primary-600 font-medium transition-colors duration-200"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                About
-              </Link>
-              <Link
-                to="/contact"
-                className="block py-3 text-neutral-700 hover:text-primary-600 font-medium transition-colors duration-200"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Contact
-              </Link>
+          <div 
+            ref={mobileMenuRef}
+            className="lg:hidden"
+            style={{
+              background: 'rgba(255, 255, 255, 0.85)',
+              backdropFilter: 'blur(20px) saturate(180%)',
+              WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+              borderRadius: '16px',
+              padding: '1.5rem',
+              marginTop: '1rem',
+              marginBottom: '1rem',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.05)',
+              border: '1px solid rgba(255, 255, 255, 0.8)',
+              animation: 'slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+            }}
+          >
+            <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              {[
+                { name: 'Shop', path: '/products' },
+                { name: 'About', path: '/about' },
+                { name: 'Contact', path: '/contact' }
+              ].map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.path}
+                  onClick={() => setIsMenuOpen(false)}
+                  style={{
+                    color: '#2c2c2c',
+                    fontSize: '16px',
+                    fontWeight: '500',
+                    textDecoration: 'none',
+                    padding: '12px 16px',
+                    borderRadius: '10px',
+                    transition: 'all 0.2s ease'
+                  }}
+                  className="mobile-nav-item"
+                >
+                  {item.name}
+                </Link>
+              ))}
+              {!user && (
+                <>
+                  <div style={{ height: '1px', background: 'rgba(0,0,0,0.06)', margin: '8px 0' }} />
+                  <Link
+                    to="/login"
+                    onClick={() => setIsMenuOpen(false)}
+                    style={{
+                      color: '#2c2c2c',
+                      fontSize: '16px',
+                      fontWeight: '500',
+                      textDecoration: 'none',
+                      padding: '12px 16px',
+                      borderRadius: '10px',
+                      transition: 'all 0.2s ease'
+                    }}
+                    className="mobile-nav-item"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/register"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="btn-primary"
+                    style={{
+                      fontSize: '16px',
+                      marginTop: '8px',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              )}
             </nav>
+
+            <style>{`
+              .mobile-nav-item:hover {
+                background: rgba(26, 58, 46, 0.08);
+                transform: translateX(4px);
+              }
+            `}</style>
           </div>
         )}
       </div>
