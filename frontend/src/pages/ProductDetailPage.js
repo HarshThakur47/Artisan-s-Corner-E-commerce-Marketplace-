@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { getProduct, addReview } from '../store/slices/productSlice';
+import { getProduct } from '../store/slices/productSlice';
 import { addToCart } from '../store/slices/cartSlice';
 import { toast } from 'react-toastify';
-import { FaStar, FaShoppingCart } from 'react-icons/fa';
+import { FaStar } from 'react-icons/fa';
+import { useTheme } from '../context/ThemeContext';
 
 const ProductDetailPage = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const { product, isLoading } = useSelector((state) => state.product);
-  const { user } = useSelector((state) => state.auth);
+  const { colors } = useTheme();
   
   const [quantity, setQuantity] = useState(1);
-  const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' });
+  const [selectedImage, setSelectedImage] = useState(0);
 
   useEffect(() => {
     dispatch(getProduct(id));
@@ -27,80 +28,167 @@ const ProductDetailPage = () => {
     }
   };
 
-  const createRipple = (e) => {
-    const button = e.currentTarget;
-    const ripple = document.createElement('span');
-    const rect = button.getBoundingClientRect();
-    const size = Math.max(rect.width, rect.height);
-    const x = e.clientX - rect.left - size / 2;
-    const y = e.clientY - rect.top - size / 2;
-    ripple.style.cssText = `
-      position: absolute; border-radius: 50%; background: rgba(255,255,255,0.6);
-      width: ${size}px; height: ${size}px; left: ${x}px; top: ${y}px;
-      animation: ripple 0.6s ease-out; pointer-events: none;
-    `;
-    button.appendChild(ripple);
-    setTimeout(() => ripple.remove(), 600);
-  };
+  // Safe image handling (creates an array even if only one image exists)
+  const productImages = product?.images?.length > 0 ? product.images : [product?.image];
 
-  if (isLoading || !product) return <div className="text-center pt-32">Loading...</div>;
+  if (isLoading || !product) return (
+    <div style={{ minHeight: '100vh', background: colors.background, paddingTop: '100px', textAlign: 'center', color: colors.text }}>
+      Loading...
+    </div>
+  );
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: '#e8e4dc',
-      paddingTop: '100px',
-      paddingBottom: '80px'
-    }}>
-      <style>{`@keyframes ripple { to { transform: scale(4); opacity: 0; } }`}</style>
-      <div className="container max-w-7xl mx-auto px-4">
+    <div style={{ background: colors.background, minHeight: '100vh', paddingTop: '100px', paddingBottom: '80px' }}>
+      <div className="container mx-auto px-4">
         <div style={{
-          background: 'rgba(255, 255, 255, 0.85)',
-          backdropFilter: 'blur(20px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-          borderRadius: '24px',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: '3rem',
+          background: colors.surface,
           padding: '3rem',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
-          border: '1px solid rgba(255, 255, 255, 0.8)',
-          animation: 'slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1)'
+          borderRadius: '16px',
+          boxShadow: `0 8px 24px ${colors.shadow}`,
+          border: `1px solid ${colors.border}`
         }}>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Image */}
-            <div className="rounded-2xl overflow-hidden shadow-lg h-96">
-              <img src={product.image} alt={product.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+          
+          {/* Left: Image Gallery */}
+          <div>
+            {/* Main Image */}
+            <div style={{
+              marginBottom: '1rem',
+              borderRadius: '12px',
+              overflow: 'hidden',
+              height: '400px',
+              background: colors.background
+            }}>
+              <img 
+                src={productImages[selectedImage]}
+                alt={product.name}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            </div>
+            
+            {/* Thumbnail Gallery */}
+            {productImages.length > 1 && (
+              <div style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
+                {productImages.map((img, i) => (
+                  <div
+                    key={i}
+                    onClick={() => setSelectedImage(i)}
+                    style={{
+                      width: '80px',
+                      height: '80px',
+                      borderRadius: '8px',
+                      overflow: 'hidden',
+                      cursor: 'pointer',
+                      border: selectedImage === i ? `3px solid ${colors.primary}` : `1px solid ${colors.border}`,
+                      transition: 'all 0.3s ease',
+                      flexShrink: 0
+                    }}
+                  >
+                    <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Right: Product Info */}
+          <div>
+            <h1 style={{ color: colors.text, marginBottom: '1rem', fontSize: '2.5rem', fontWeight: 'bold' }}>
+              {product.name}
+            </h1>
+
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <div style={{ display: 'flex', color: '#ffb400', marginRight: '0.5rem' }}>
+                {[...Array(5)].map((_, i) => (
+                  <FaStar key={i} color={i < product.rating ? '#ffb400' : colors.border} />
+                ))}
+              </div>
+              <span style={{ color: colors.textSecondary }}>({product.numReviews} reviews)</span>
             </div>
 
-            {/* Details */}
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">{product.name}</h1>
-              <div className="flex items-center mb-6">
-                <div className="flex text-yellow-400">
-                  {[...Array(5)].map((_, i) => (
-                    <FaStar key={i} className={i < Math.floor(product.rating) ? 'text-yellow-400' : 'text-gray-300'} />
-                  ))}
-                </div>
-                <span className="ml-2 text-gray-600">({product.numReviews} reviews)</span>
-              </div>
-              <p className="text-3xl font-bold text-primary-600 mb-6">₹{product.price}</p>
-              <p className="text-gray-600 mb-8 leading-relaxed">{product.description}</p>
-              
-              <div className="flex items-center space-x-6 mb-8">
-                <div className="flex items-center border border-gray-300 rounded-lg">
-                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-4 py-2 hover:bg-gray-100">-</button>
-                  <span className="px-4 font-medium">{quantity}</span>
-                  <button onClick={() => setQuantity(Math.min(product.countInStock, quantity + 1))} className="px-4 py-2 hover:bg-gray-100">+</button>
-                </div>
-                <span className="text-sm text-gray-500">{product.countInStock} available</span>
-              </div>
+            <p style={{ fontSize: '2rem', fontWeight: '700', color: colors.primary, marginBottom: '1.5rem' }}>
+              ₹{product.price}
+            </p>
 
-              <button
-                onClick={(e) => { handleAddToCart(); createRipple(e); }}
-                disabled={product.countInStock === 0}
-                className="btn-primary w-full py-4 text-lg font-semibold relative overflow-hidden"
-              >
-                {product.countInStock === 0 ? 'Out of Stock' : 'Add to Cart'}
-              </button>
+            <p style={{ color: colors.text, lineHeight: '1.8', marginBottom: '2rem' }}>
+              {product.description}
+            </p>
+            
+            {/* Quantity Selector */}
+            <div style={{ marginBottom: '2rem' }}>
+              <p style={{ marginBottom: '0.5rem', fontWeight: '600', color: colors.text }}>Quantity</p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <button
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  style={{
+                    width: '40px', height: '40px', borderRadius: '10px',
+                    border: `2px solid ${colors.primary}`, background: 'transparent',
+                    color: colors.primary, fontSize: '20px', fontWeight: '600',
+                    cursor: 'pointer', transition: 'all 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = colors.primary; e.currentTarget.style.color = '#fff'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = colors.primary; }}
+                >
+                  -
+                </button>
+                
+                <span style={{ fontSize: '1.25rem', fontWeight: '600', color: colors.text, minWidth: '40px', textAlign: 'center' }}>
+                  {quantity}
+                </span>
+                
+                <button
+                  onClick={() => setQuantity(Math.min(product.countInStock, quantity + 1))}
+                  style={{
+                    width: '40px', height: '40px', borderRadius: '10px',
+                    border: `2px solid ${colors.primary}`, background: 'transparent',
+                    color: colors.primary, fontSize: '20px', fontWeight: '600',
+                    cursor: 'pointer', transition: 'all 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = colors.primary; e.currentTarget.style.color = '#fff'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = colors.primary; }}
+                >
+                  +
+                </button>
+                <span style={{ marginLeft: '1rem', color: colors.textSecondary }}>
+                  {product.countInStock > 0 ? `${product.countInStock} available` : 'Out of Stock'}
+                </span>
+              </div>
             </div>
+
+            {/* Add to Cart Button */}
+            <button
+              onClick={handleAddToCart}
+              disabled={product.countInStock === 0}
+              style={{
+                width: '100%',
+                padding: '16px',
+                background: product.countInStock === 0 ? colors.border : `linear-gradient(135deg, ${colors.primary}, ${colors.primaryDark})`,
+                color: '#fff',
+                border: 'none',
+                borderRadius: '12px',
+                fontSize: '16px',
+                fontWeight: '600',
+                cursor: product.countInStock === 0 ? 'not-allowed' : 'pointer',
+                transition: 'all 0.3s ease',
+                boxShadow: `0 4px 12px ${colors.shadow}`
+              }}
+              onMouseEnter={(e) => {
+                if(product.countInStock > 0) {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = `0 8px 20px ${colors.shadow}`;
+                }
+              }}
+              onMouseLeave={(e) => {
+                if(product.countInStock > 0) {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = `0 4px 12px ${colors.shadow}`;
+                }
+              }}
+            >
+              {product.countInStock === 0 ? 'Out of Stock' : 'Add to Cart'}
+            </button>
           </div>
         </div>
       </div>
