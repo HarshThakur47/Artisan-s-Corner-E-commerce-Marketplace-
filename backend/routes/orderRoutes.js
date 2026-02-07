@@ -4,9 +4,8 @@ const asyncHandler = require('express-async-handler');
 const Order = require('../models/orderModel');
 const { protect, admin } = require('../middleware/authMiddleware');
 const Razorpay = require('razorpay');
-// @desc    Create new order
-// @route   POST /api/orders
-// @access  Private
+
+// Create new order
 const addOrderItems = asyncHandler(async (req, res) => {
   const {
     orderItems,
@@ -16,6 +15,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
     taxPrice,
     shippingPrice,
     totalPrice,
+    paymentResult,
   } = req.body;
 
   if (orderItems && orderItems.length === 0) {
@@ -31,17 +31,18 @@ const addOrderItems = asyncHandler(async (req, res) => {
       taxPrice,
       shippingPrice,
       totalPrice,
+      // If paymentResult exists, mark as Paid immediately
+      paymentResult: paymentResult || null,
+      isPaid: paymentResult ? true : false,
+      paidAt: paymentResult ? Date.now() : null,
     });
 
     const createdOrder = await order.save();
-
     res.status(201).json(createdOrder);
   }
 });
 
-// @desc    Get order by ID
-// @route   GET /api/orders/:id
-// @access  Private
+// Get order by ID
 const getOrderById = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id).populate(
     'user',
@@ -56,9 +57,7 @@ const getOrderById = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Update order to paid
-// @route   PUT /api/orders/:id/pay
-// @access  Private
+// Update order to paid
 const updateOrderToPaid = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id);
 
@@ -73,7 +72,6 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
     };
 
     const updatedOrder = await order.save();
-
     res.json(updatedOrder);
   } else {
     res.status(404);
@@ -81,9 +79,7 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Update order to delivered
-// @route   PUT /api/orders/:id/deliver
-// @access  Private/Admin
+// Update order to delivered
 const updateOrderToDelivered = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id);
 
@@ -92,7 +88,6 @@ const updateOrderToDelivered = asyncHandler(async (req, res) => {
     order.deliveredAt = Date.now();
 
     const updatedOrder = await order.save();
-
     res.json(updatedOrder);
   } else {
     res.status(404);
@@ -100,19 +95,15 @@ const updateOrderToDelivered = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Get logged in user orders
-// @route   GET /api/orders/myorders
-// @access  Private
+// Get logged in user orders
 const getMyOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({ user: req.user._id });
+  const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 });
   res.json(orders);
 });
 
-// @desc    Get all orders
-// @route   GET /api/orders
-// @access  Private/Admin
+// Get all orders (Admin)
 const getOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({}).populate('user', 'id name');
+  const orders = await Order.find({}).populate('user', 'id name').sort({ createdAt: -1 });
   res.json(orders);
 });
 
@@ -122,12 +113,12 @@ router.route('/:id').get(protect, getOrderById);
 router.route('/:id/pay').put(protect, updateOrderToPaid);
 router.route('/:id/deliver').put(protect, admin, updateOrderToDelivered);
 
-// RazorPay Setup
+// Get RazorPay Key
 router.get('/config/razorpay', (req, res) => {
   res.send(process.env.RAZORPAY_KEY_ID);
 });
 
-// 2. Route to Create Razorpay Order
+// Create RazorPay Order
 router.post('/razorpay', async (req, res) => {
   const razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
@@ -139,7 +130,7 @@ router.post('/razorpay', async (req, res) => {
   const currency = 'INR';
 
   const options = {
-    amount: amount * 100, // Razorpay handles amount in "Paisa" (100 INR = 10000 paisa)
+    amount: amount * 100, 
     currency,
     receipt: `receipt_${Date.now()}`,
     payment_capture,
@@ -157,6 +148,5 @@ router.post('/razorpay', async (req, res) => {
     res.status(400).send('Unable to create order');
   }
 });
-
 
 module.exports = router;
