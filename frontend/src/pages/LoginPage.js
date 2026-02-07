@@ -4,10 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { login, reset } from '../store/slices/authSlice';
 import { toast } from 'react-toastify';
 import { FaEye, FaEyeSlash, FaEnvelope, FaLock } from 'react-icons/fa';
-import { useTheme } from '../context/ThemeContext'; // 1. Import Theme
+import { useTheme } from '../context/ThemeContext';
 
 const LoginPage = () => {
-  const { colors, isDark } = useTheme(); // 2. Get Theme
+  const { colors, isDark } = useTheme();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -86,7 +86,7 @@ const LoginPage = () => {
     <div
       style={{
         minHeight: '100vh',
-        background: colors.background, // Dynamic Background
+        background: colors.background,
         paddingTop: '100px',
         paddingBottom: '80px',
         position: 'relative',
@@ -94,7 +94,7 @@ const LoginPage = () => {
         transition: 'background 0.3s ease'
       }}
     >
-      {/* Decorative background elements (Dynamic Colors) */}
+      {/* Decorative background elements */}
       <div
         style={{
           position: 'absolute',
@@ -143,7 +143,7 @@ const LoginPage = () => {
           {/* Glass Morphism Card */}
           <div
             style={{
-              background: isDark ? 'rgba(30, 27, 41, 0.7)' : 'rgba(255, 255, 255, 0.85)', // Dark/Light Glass
+              background: isDark ? 'rgba(30, 27, 41, 0.7)' : 'rgba(255, 255, 255, 0.85)',
               backdropFilter: 'blur(20px) saturate(180%)',
               WebkitBackdropFilter: 'blur(20px) saturate(180%)',
               borderRadius: '24px',
@@ -318,25 +318,7 @@ const LoginPage = () => {
                 </div>
               </div>
 
-              {/* Forgot Password Link */}
-              <div style={{ textAlign: 'right', marginBottom: '2rem' }}>
-                <Link
-                  to="/forgot-password"
-                  style={{
-                    fontSize: '14px',
-                    color: colors.primary,
-                    textDecoration: 'none',
-                    fontWeight: '500',
-                    transition: 'color 0.3s ease'
-                  }}
-                  onMouseEnter={(e) => (e.target.style.color = colors.primaryDark)}
-                  onMouseLeave={(e) => (e.target.style.color = colors.primary)}
-                >
-                  Forgot password?
-                </Link>
-              </div>
-
-              {/* Submit Button */}
+              {/* Submit Button (Moved margin here since link is gone) */}
               <button
                 type="submit"
                 onClick={createRipple}
@@ -345,6 +327,7 @@ const LoginPage = () => {
                 style={{
                   width: '100%',
                   padding: '16px',
+                  marginTop: '1.5rem', // Added extra space here
                   fontSize: '16px',
                   fontWeight: '600',
                   position: 'relative',
