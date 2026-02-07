@@ -11,8 +11,9 @@ const ProductListPage = () => {
   const { colors } = useTheme();
   const [searchParams, setSearchParams] = useSearchParams();
   
+  // 1. Initialize state from URL params
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all');
   const [sortBy, setSortBy] = useState('name');
   const [showFilters, setShowFilters] = useState(false);
 
@@ -20,13 +21,34 @@ const ProductListPage = () => {
     dispatch(getProducts());
   }, [dispatch]);
 
+  // 2. NEW: Listen for URL changes (e.g. clicking Home Page links)
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get('category');
+    const searchFromUrl = searchParams.get('search');
+
+    if (categoryFromUrl) {
+      setSelectedCategory(categoryFromUrl);
+    } else {
+      setSelectedCategory('all');
+    }
+
+    if (searchFromUrl) {
+      setSearchTerm(searchFromUrl);
+    }
+  }, [searchParams]);
+
   const categories = ['all', ...new Set(products.map(product => product.category))];
 
   const filteredProducts = products
     .filter(product => {
-      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           product.description.toLowerCase().includes(searchTerm.toLowerCase());
+      // Safe check for product name/desc to prevent crashes if data is missing
+      const name = product.name ? product.name.toLowerCase() : '';
+      const desc = product.description ? product.description.toLowerCase() : '';
+      const term = searchTerm.toLowerCase();
+
+      const matchesSearch = name.includes(term) || desc.includes(term);
       const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
+      
       return matchesSearch && matchesCategory;
     })
     .sort((a, b) => {
@@ -40,15 +62,29 @@ const ProductListPage = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (searchTerm.trim()) setSearchParams({ search: searchTerm });
-    else setSearchParams({});
+    // Update URL when searching
+    const params = {};
+    if (searchTerm.trim()) params.search = searchTerm;
+    if (selectedCategory !== 'all') params.category = selectedCategory;
+    setSearchParams(params);
+  };
+
+  const handleCategoryChange = (e) => {
+    const newCat = e.target.value;
+    setSelectedCategory(newCat);
+    
+    // Update URL when changing category via dropdown
+    const params = {};
+    if (searchTerm.trim()) params.search = searchTerm;
+    if (newCat !== 'all') params.category = newCat;
+    setSearchParams(params);
   };
 
   const clearFilters = () => {
     setSearchTerm('');
     setSelectedCategory('all');
     setSortBy('name');
-    setSearchParams({});
+    setSearchParams({}); // Clear URL params
   };
 
   return (
@@ -77,7 +113,7 @@ const ProductListPage = () => {
           </p>
         </div>
 
-        {/* Search Bar - FIXED WITHOUT WHITE BOX */}
+        {/* Search Bar */}
         <div style={{ marginBottom: '2rem' }}>
           <div style={{
             display: 'flex',
@@ -238,7 +274,7 @@ const ProductListPage = () => {
                   </label>
                   <select
                     value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    onChange={handleCategoryChange} // Updated handler
                     style={{
                       width: '100%',
                       padding: '12px',
@@ -333,6 +369,7 @@ const ProductListPage = () => {
         <div style={{ marginBottom: '2rem' }}>
           <p style={{ fontSize: '15px', color: colors.textSecondary, textAlign: 'center' }}>
             {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'} found
+            {selectedCategory !== 'all' && <span style={{ fontWeight: '600', marginLeft: '5px' }}>in {selectedCategory}</span>}
           </p>
         </div>
 
@@ -473,14 +510,14 @@ const ProductListPage = () => {
                 </h3>
 
                 {/* Rating */}
-                {product.rating && (
+                {product.rating !== undefined && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
                     <div style={{ display: 'flex', gap: '2px' }}>
                       {[...Array(5)].map((_, i) => (
                         <FaStar
                           key={i}
                           size={14}
-                          color={i < Math.floor(product.rating) ? colors.warning : colors.border}
+                          color={i < Math.floor(product.rating) ? '#c97d3f' : colors.border}
                         />
                       ))}
                     </div>

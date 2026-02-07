@@ -67,12 +67,19 @@ const Header = () => {
       }}
     >
       <div className="container">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 0' }}>
+        {/* FIX: Removed 'justifyContent: space-between' to allow custom flex weighting */}
+        <div style={{ display: 'flex', alignItems: 'center', padding: '1rem 0' }}>
           
-          {/* Logo */}
+          {/* Logo Section (Flex: 1) - Pushes content to center */}
           <Link 
             to="/" 
-            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '0.75rem', 
+              textDecoration: 'none',
+              flex: 1 // FIX: Takes up equal space on the left
+            }}
             onClick={() => setIsMenuOpen(false)}
           >
             <div style={{
@@ -104,11 +111,19 @@ const Header = () => {
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav style={{ display: 'flex', alignItems: 'center', gap: '3rem' }} className="hidden-mobile">
+          {/* Desktop Navigation (Centered) */}
+          <nav 
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '3rem',
+              justifyContent: 'center' // FIX: Ensures links stay centered in their box
+            }} 
+            className="hidden-mobile"
+          >
             {[
               { name: 'Shop', path: '/products' },
-              { name: 'About', path: '/about' },
+              { name: 'About', path: '/about' }
             ].map((item) => (
               <Link
                 key={item.name}
@@ -120,7 +135,7 @@ const Header = () => {
                   textDecoration: 'none',
                   transition: 'color 0.3s ease',
                   position: 'relative',
-                  padding: '8px 10px'
+                  padding: '8px 0'
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.color = colors.primary;
@@ -148,8 +163,14 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Right Actions */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          {/* Right Actions (Flex: 1) - Pushes content to center from right */}
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '1rem',
+            flex: 1, // FIX: Takes up equal space on the right
+            justifyContent: 'flex-end' // FIX: Aligns items to the far right
+          }}>
             
             {/* Cart */}
             <Link 
