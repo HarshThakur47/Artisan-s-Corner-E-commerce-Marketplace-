@@ -3,10 +3,12 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getProducts } from '../store/slices/productSlice';
 import { FaArrowRight, FaStar } from 'react-icons/fa';
+import { useTheme } from '../context/ThemeContext'; // 1. Import Theme Hook
 
 const HomePage = () => {
   const dispatch = useDispatch();
   const { products, isLoading } = useSelector((state) => state.product);
+  const { isDark, colors } = useTheme(); // 2. Get Theme Values
   const [scrollY, setScrollY] = useState(0);
   
   useEffect(() => {
@@ -21,7 +23,6 @@ const HomePage = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    // Scroll reveal animation
     const observerOptions = {
       threshold: 0.1,
       rootMargin: '0px 0px -100px 0px'
@@ -46,7 +47,9 @@ const HomePage = () => {
   const categories = ['Handmade Crafts', 'Pottery & Ceramics', 'Textiles', 'Jewelry'];
 
   return (
-    <div style={{ background: '#e8e4dc' }}>
+    // 3. Dynamic Background: Beige in Light Mode, Dark Void in Dark Mode
+    <div style={{ background: isDark ? colors.background : '#e8e4dc', transition: 'background 0.3s ease' }}>
+      
       {/* Hero Section */}
       <section 
         style={{
@@ -66,7 +69,7 @@ const HomePage = () => {
             right: '10%',
             width: '400px',
             height: '400px',
-            background: 'rgba(255,255,255,0.3)',
+            background: isDark ? 'rgba(139, 92, 246, 0.1)' : 'rgba(255,255,255,0.3)', // Purple glow in dark mode
             borderRadius: '50%',
             filter: 'blur(100px)',
             transform: `translateY(${scrollY * 0.2}px)`
@@ -79,7 +82,7 @@ const HomePage = () => {
             left: '5%',
             width: '300px',
             height: '300px',
-            background: 'rgba(26, 58, 46, 0.1)',
+            background: isDark ? 'rgba(139, 92, 246, 0.05)' : 'rgba(26, 58, 46, 0.1)',
             borderRadius: '50%',
             filter: 'blur(80px)',
             transform: `translateY(${scrollY * -0.15}px)`
@@ -92,7 +95,7 @@ const HomePage = () => {
               style={{
                 fontSize: 'clamp(3rem, 8vw, 5rem)',
                 fontWeight: '400',
-                color: '#2c2c2c',
+                color: isDark ? colors.text : '#2c2c2c', // Dynamic Text
                 marginBottom: '1.5rem',
                 lineHeight: '1.1',
                 letterSpacing: '-2px',
@@ -106,7 +109,7 @@ const HomePage = () => {
             <p 
               style={{
                 fontSize: '1.125rem',
-                color: '#5a5a5a',
+                color: isDark ? colors.textSecondary : '#5a5a5a', // Dynamic Secondary Text
                 marginBottom: '3rem',
                 lineHeight: '1.8',
                 animation: 'fadeIn 1s ease 0.2s backwards'
@@ -124,10 +127,29 @@ const HomePage = () => {
                 animation: 'fadeIn 1s ease 0.4s backwards'
               }}
             >
-              <Link to="/products" className="btn-primary">
+              {/* Dynamic Button Color: Black/Purple in Light, Vibrant Purple in Dark */}
+              <Link to="/products" className="btn-primary" style={{
+                  background: colors.primary,
+                  color: '#fff',
+                  border: 'none',
+                  padding: '12px 24px',
+                  borderRadius: '8px',
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  fontWeight: '600'
+              }}>
                 Explore Products <FaArrowRight />
               </Link>
-              <Link to="/about" className="btn-outline">
+              <Link to="/about" className="btn-outline" style={{
+                  border: `2px solid ${isDark ? colors.text : '#2c2c2c'}`,
+                  color: isDark ? colors.text : '#2c2c2c',
+                  padding: '12px 24px',
+                  borderRadius: '8px',
+                  textDecoration: 'none',
+                  fontWeight: '600'
+              }}>
                 Learn More
               </Link>
             </div>
@@ -147,7 +169,7 @@ const HomePage = () => {
               style={{
                 width: '24px',
                 height: '36px',
-                border: '2px solid #2c2c2c',
+                border: `2px solid ${isDark ? colors.text : '#2c2c2c'}`,
                 borderRadius: '12px',
                 position: 'relative'
               }}
@@ -156,7 +178,7 @@ const HomePage = () => {
                 style={{
                   width: '4px',
                   height: '8px',
-                  background: '#2c2c2c',
+                  background: isDark ? colors.text : '#2c2c2c',
                   borderRadius: '2px',
                   position: 'absolute',
                   top: '8px',
@@ -176,14 +198,14 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Categories Section with hover cards */}
+      {/* Categories Section */}
       <section style={{ padding: '6rem 0' }} className="scroll-reveal">
         <div className="container">
           <h2 
             style={{
               fontSize: 'clamp(2rem, 5vw, 3rem)',
               fontWeight: '400',
-              color: '#2c2c2c',
+              color: isDark ? colors.text : '#2c2c2c',
               textAlign: 'center',
               marginBottom: '4rem',
               letterSpacing: '-1px'
@@ -197,18 +219,18 @@ const HomePage = () => {
                 key={index}
                 to={`/products?category=${category}`}
                 style={{
-                  background: '#fff',
+                  background: isDark ? colors.surface : '#fff', // White vs Dark Surface
                   borderRadius: '16px',
                   padding: '3rem 2rem',
                   textAlign: 'center',
                   textDecoration: 'none',
-                  border: '1px solid rgba(0,0,0,0.06)',
+                  border: isDark ? `1px solid ${colors.border}` : '1px solid rgba(0,0,0,0.06)',
                   transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                   cursor: 'pointer'
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-12px)';
-                  e.currentTarget.style.boxShadow = '0 20px 40px rgba(0,0,0,0.1)';
+                  e.currentTarget.style.boxShadow = `0 20px 40px ${isDark ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.1)'}`;
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)';
@@ -219,7 +241,7 @@ const HomePage = () => {
                   style={{
                     width: '80px',
                     height: '80px',
-                    background: '#e8e4dc',
+                    background: isDark ? colors.surfaceLight : '#e8e4dc',
                     borderRadius: '50%',
                     margin: '0 auto 1.5rem',
                     display: 'flex',
@@ -237,13 +259,13 @@ const HomePage = () => {
                   style={{
                     fontSize: '1.125rem',
                     fontWeight: '500',
-                    color: '#2c2c2c',
+                    color: isDark ? colors.text : '#2c2c2c',
                     marginBottom: '0.5rem'
                   }}
                 >
                   {category}
                 </h3>
-                <p style={{ fontSize: '0.9rem', color: '#999', margin: 0 }}>
+                <p style={{ fontSize: '0.9rem', color: isDark ? colors.textSecondary : '#999', margin: 0 }}>
                   Explore Collection →
                 </p>
               </Link>
@@ -253,14 +275,14 @@ const HomePage = () => {
       </section>
 
       {/* Featured Products Section */}
-      <section style={{ padding: '6rem 0', background: '#f5f3ef' }} className="scroll-reveal">
+      <section style={{ padding: '6rem 0', background: isDark ? colors.surfaceLight : '#f5f3ef' }} className="scroll-reveal">
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
             <h2 
               style={{
                 fontSize: 'clamp(2rem, 5vw, 3rem)',
                 fontWeight: '400',
-                color: '#2c2c2c',
+                color: isDark ? colors.text : '#2c2c2c',
                 marginBottom: '1rem',
                 letterSpacing: '-1px'
               }}
@@ -271,21 +293,21 @@ const HomePage = () => {
               to="/products"
               style={{
                 fontSize: '1rem',
-                color: '#2c2c2c',
+                color: isDark ? colors.text : '#2c2c2c',
                 textDecoration: 'none',
-                border: '1px solid #2c2c2c',
+                border: `1px solid ${isDark ? colors.text : '#2c2c2c'}`,
                 padding: '10px 24px',
                 borderRadius: '8px',
                 display: 'inline-block',
                 transition: 'all 0.3s ease'
               }}
               onMouseEnter={(e) => {
-                e.target.style.background = '#2c2c2c';
-                e.target.style.color = '#fff';
+                e.currentTarget.style.background = isDark ? colors.text : '#2c2c2c';
+                e.currentTarget.style.color = isDark ? colors.background : '#fff';
               }}
               onMouseLeave={(e) => {
-                e.target.style.background = 'transparent';
-                e.target.style.color = '#2c2c2c';
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.color = isDark ? colors.text : '#2c2c2c';
               }}
             >
               Shop now
@@ -295,10 +317,10 @@ const HomePage = () => {
           {isLoading ? (
             <div className="grid grid-cols-4">
               {[1, 2, 3, 4].map((item) => (
-                <div key={item} style={{ background: '#fff', borderRadius: '16px', padding: '1.5rem' }}>
-                  <div style={{ height: '280px', background: '#e8e4dc', borderRadius: '12px', marginBottom: '1rem' }} className="loading" />
-                  <div style={{ height: '20px', background: '#e8e4dc', borderRadius: '4px', marginBottom: '0.5rem' }} className="loading" />
-                  <div style={{ height: '20px', background: '#e8e4dc', borderRadius: '4px', width: '60%' }} className="loading" />
+                <div key={item} style={{ background: isDark ? colors.surface : '#fff', borderRadius: '16px', padding: '1.5rem' }}>
+                  <div style={{ height: '280px', background: isDark ? colors.surfaceLight : '#e8e4dc', borderRadius: '12px', marginBottom: '1rem' }} className="loading" />
+                  <div style={{ height: '20px', background: isDark ? colors.surfaceLight : '#e8e4dc', borderRadius: '4px', marginBottom: '0.5rem' }} className="loading" />
+                  <div style={{ height: '20px', background: isDark ? colors.surfaceLight : '#e8e4dc', borderRadius: '4px', width: '60%' }} className="loading" />
                 </div>
               ))}
             </div>
@@ -309,17 +331,17 @@ const HomePage = () => {
                   key={product._id}
                   to={`/product/${product._id}`}
                   style={{
-                    background: '#fff',
+                    background: isDark ? colors.surface : '#fff',
                     borderRadius: '16px',
                     padding: '1.5rem',
                     textDecoration: 'none',
-                    border: '1px solid rgba(0,0,0,0.06)',
+                    border: isDark ? `1px solid ${colors.border}` : '1px solid rgba(0,0,0,0.06)',
                     transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                     position: 'relative'
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = 'translateY(-8px)';
-                    e.currentTarget.style.boxShadow = '0 16px 32px rgba(0,0,0,0.12)';
+                    e.currentTarget.style.boxShadow = `0 16px 32px ${isDark ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.12)'}`;
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = 'translateY(0)';
@@ -358,7 +380,7 @@ const HomePage = () => {
                     style={{
                       fontSize: '1rem',
                       fontWeight: '500',
-                      color: '#2c2c2c',
+                      color: isDark ? colors.text : '#2c2c2c',
                       marginBottom: '0.5rem'
                     }}
                   >
@@ -381,7 +403,7 @@ const HomePage = () => {
                   </div>
                   
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <p style={{ fontSize: '1.25rem', fontWeight: '600', color: '#2c2c2c', margin: 0 }}>
+                    <p style={{ fontSize: '1.25rem', fontWeight: '600', color: isDark ? colors.text : '#2c2c2c', margin: 0 }}>
                       From ₹{product.price}
                     </p>
                   </div>
@@ -397,7 +419,7 @@ const HomePage = () => {
         <div className="container">
           <div 
             style={{
-              background: '#1a3a2e',
+              background: isDark ? colors.surface : '#1a3a2e', // Green in Light, Dark Surface in Dark
               borderRadius: '24px',
               padding: '5rem 3rem',
               textAlign: 'center',
@@ -436,7 +458,7 @@ const HomePage = () => {
               to="/products"
               style={{
                 background: '#fff',
-                color: '#1a3a2e',
+                color: isDark ? colors.background : '#1a3a2e',
                 padding: '16px 40px',
                 borderRadius: '8px',
                 fontSize: '15px',
@@ -448,12 +470,12 @@ const HomePage = () => {
                 zIndex: 1
               }}
               onMouseEnter={(e) => {
-                e.target.style.transform = 'translateY(-4px)';
-                e.target.style.boxShadow = '0 12px 24px rgba(0,0,0,0.2)';
+                e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.2)';
               }}
               onMouseLeave={(e) => {
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = 'none';
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
               }}
             >
               See products

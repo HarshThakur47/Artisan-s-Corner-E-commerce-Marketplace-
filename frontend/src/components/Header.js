@@ -108,7 +108,7 @@ const Header = () => {
           <nav style={{ display: 'flex', alignItems: 'center', gap: '3rem' }} className="hidden-mobile">
             {[
               { name: 'Shop', path: '/products' },
-              { name: 'About', path: '/about' }
+              { name: 'About', path: '/about' },
             ].map((item) => (
               <Link
                 key={item.name}
@@ -120,7 +120,7 @@ const Header = () => {
                   textDecoration: 'none',
                   transition: 'color 0.3s ease',
                   position: 'relative',
-                  padding: '8px 0'
+                  padding: '8px 10px'
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.color = colors.primary;

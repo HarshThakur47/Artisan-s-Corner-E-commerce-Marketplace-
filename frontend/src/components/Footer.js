@@ -1,320 +1,111 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaFacebook, FaInstagram, FaLinkedin, FaWhatsapp } from 'react-icons/fa';
+import { FaGithub, FaInstagram, FaTwitter, FaHeart } from 'react-icons/fa';
+import { useTheme } from '../context/ThemeContext'; // Import Theme
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear();
+  const { colors } = useTheme(); // Get Colors
 
   return (
-    <footer style={{ background: '#e8e4dc', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
-      <div className="container" style={{ padding: '4rem 2rem 2rem' }}>
-        {/* Main Footer Content */}
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-          gap: '3rem',
-          marginBottom: '3rem'
-        }}>
-          {/* Logo & Description */}
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-              <div 
-                style={{
-                  width: '40px',
-                  height: '40px',
-                  background: '#2c2c2c',
-                  borderRadius: '8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#e8e4dc"/>
-                  <path d="M2 17L12 22L22 17M2 12L12 17L22 12" stroke="#e8e4dc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
+    <footer 
+      style={{
+        background: colors.surface, // FIX: Dynamic Background
+        borderTop: `1px solid ${colors.border}`,
+        padding: '4rem 0 2rem',
+        marginTop: 'auto',
+        color: colors.text, // FIX: Dynamic Text Color
+        transition: 'background 0.3s ease, color 0.3s ease'
+      }}
+    >
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+          
+          {/* Brand */}
+          <div className="col-span-1 md:col-span-1">
+            <div className="flex items-center gap-2 mb-4">
+              <div style={{ 
+                width: '32px', height: '32px', 
+                background: colors.primary, // Dynamic Brand Color
+                borderRadius: '8px', 
+                display: 'flex', alignItems: 'center', justifyContent: 'center' 
+              }}>
+                <span style={{ color: '#fff', fontWeight: 'bold' }}>A</span>
               </div>
-              <span style={{ fontSize: '1.25rem', fontWeight: '600', color: '#2c2c2c' }}>
-                Artisan Corner
-              </span>
+              <span style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>Artisan Corner</span>
             </div>
-            <p style={{ fontSize: '0.9rem', color: '#5a5a5a', lineHeight: '1.6', marginBottom: '1.5rem' }}>
-              Handcrafted excellence created for artisan lovers. Discover unique pieces from talented makers.
+            <p style={{ color: colors.textSecondary, fontSize: '0.9rem', lineHeight: '1.6' }}>
+              Connecting you with India's finest artisans and their handcrafted legacy. Built with love for culture.
             </p>
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <a 
-                href="https://facebook.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                style={{
-                  width: '36px',
-                  height: '36px',
-                  borderRadius: '50%',
-                  background: 'transparent',
-                  border: '1px solid #2c2c2c',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 0.3s ease'
+          </div>
+
+          {/* Links */}
+          <div>
+            <h3 style={{ fontWeight: 'bold', marginBottom: '1.5rem' }}>Shop</h3>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <li><Link to="/products" style={{ color: colors.textSecondary, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e)=>e.target.style.color=colors.primary} onMouseLeave={(e)=>e.target.style.color=colors.textSecondary}>All Products</Link></li>
+              <li><Link to="/products?category=Ceramics" style={{ color: colors.textSecondary, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e)=>e.target.style.color=colors.primary} onMouseLeave={(e)=>e.target.style.color=colors.textSecondary}>Ceramics</Link></li>
+              <li><Link to="/products?category=Textiles" style={{ color: colors.textSecondary, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e)=>e.target.style.color=colors.primary} onMouseLeave={(e)=>e.target.style.color=colors.textSecondary}>Textiles</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 style={{ fontWeight: 'bold', marginBottom: '1.5rem' }}>Company</h3>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <li><Link to="/about" style={{ color: colors.textSecondary, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e)=>e.target.style.color=colors.primary} onMouseLeave={(e)=>e.target.style.color=colors.textSecondary}>About Us</Link></li>
+              <li><Link to="/contact" style={{ color: colors.textSecondary, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e)=>e.target.style.color=colors.primary} onMouseLeave={(e)=>e.target.style.color=colors.textSecondary}>Contact</Link></li>
+              <li><Link to="/privacy" style={{ color: colors.textSecondary, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e)=>e.target.style.color=colors.primary} onMouseLeave={(e)=>e.target.style.color=colors.textSecondary}>Privacy Policy</Link></li>
+            </ul>
+          </div>
+
+          {/* Newsletter */}
+          <div>
+            <h3 style={{ fontWeight: 'bold', marginBottom: '1.5rem' }}>Stay Updated</h3>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <input 
+                type="email" 
+                placeholder="Enter email" 
+                style={{ 
+                  width: '100%', 
+                  padding: '10px 16px', 
+                  borderRadius: '8px', 
+                  border: `1px solid ${colors.border}`, 
+                  background: colors.background,
+                  color: colors.text,
+                  outline: 'none'
                 }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = '#2c2c2c';
-                  e.currentTarget.querySelector('svg').style.color = '#fff';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.querySelector('svg').style.color = '#2c2c2c';
-                }}
-              >
-                <FaFacebook size={16} color="#2c2c2c" />
-              </a>
-              <a 
-                href="https://instagram.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                style={{
-                  width: '36px',
-                  height: '36px',
-                  borderRadius: '50%',
-                  background: 'transparent',
-                  border: '1px solid #2c2c2c',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 0.3s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = '#2c2c2c';
-                  e.currentTarget.querySelector('svg').style.color = '#fff';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.querySelector('svg').style.color = '#2c2c2c';
-                }}
-              >
-                <FaInstagram size={16} color="#2c2c2c" />
-              </a>
-              <a 
-                href="https://linkedin.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                style={{
-                  width: '36px',
-                  height: '36px',
-                  borderRadius: '50%',
-                  background: 'transparent',
-                  border: '1px solid #2c2c2c',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 0.3s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = '#2c2c2c';
-                  e.currentTarget.querySelector('svg').style.color = '#fff';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.querySelector('svg').style.color = '#2c2c2c';
-                }}
-              >
-                <FaLinkedin size={16} color="#2c2c2c" />
-              </a>
+              />
+              <button style={{ 
+                background: colors.primary, 
+                color: '#fff', 
+                border: 'none', 
+                padding: '10px 16px', 
+                borderRadius: '8px', 
+                cursor: 'pointer' 
+              }}>
+                →
+              </button>
             </div>
-          </div>
-
-          {/* Quick Links */}
-          <div>
-            <h3 style={{ fontSize: '1rem', fontWeight: '600', color: '#2c2c2c', marginBottom: '1.5rem' }}>
-              Shop
-            </h3>
-            <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {['All Products', 'New Arrivals', 'Best Sellers', 'Special Offers'].map((link) => (
-                <Link
-                  key={link}
-                  to="/products"
-                  style={{
-                    fontSize: '0.9rem',
-                    color: '#5a5a5a',
-                    textDecoration: 'none',
-                    transition: 'color 0.3s ease'
-                  }}
-                  onMouseEnter={(e) => e.target.style.color = '#2c2c2c'}
-                  onMouseLeave={(e) => e.target.style.color = '#5a5a5a'}
-                >
-                  {link}
-                </Link>
-              ))}
-            </nav>
-          </div>
-
-          {/* Company */}
-          <div>
-            <h3 style={{ fontSize: '1rem', fontWeight: '600', color: '#2c2c2c', marginBottom: '1.5rem' }}>
-              Company
-            </h3>
-            <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {['About Us', 'Our Artisans', 'Sustainability', 'Careers'].map((link) => (
-                <Link
-                  key={link}
-                  to={`/${link.toLowerCase().replace(/\s+/g, '-')}`}
-                  style={{
-                    fontSize: '0.9rem',
-                    color: '#5a5a5a',
-                    textDecoration: 'none',
-                    transition: 'color 0.3s ease'
-                  }}
-                  onMouseEnter={(e) => e.target.style.color = '#2c2c2c'}
-                  onMouseLeave={(e) => e.target.style.color = '#5a5a5a'}
-                >
-                  {link}
-                </Link>
-              ))}
-            </nav>
-          </div>
-
-          {/* Support */}
-          <div>
-            <h3 style={{ fontSize: '1rem', fontWeight: '600', color: '#2c2c2c', marginBottom: '1.5rem' }}>
-              Support
-            </h3>
-            <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {['Contact Us', 'FAQs', 'Shipping & Returns', 'Terms & Conditions', 'Privacy Policy'].map((link) => (
-                <Link
-                  key={link}
-                  to={`/${link.toLowerCase().replace(/\s+/g, '-').replace(/&/g, 'and')}`}
-                  style={{
-                    fontSize: '0.9rem',
-                    color: '#5a5a5a',
-                    textDecoration: 'none',
-                    transition: 'color 0.3s ease'
-                  }}
-                  onMouseEnter={(e) => e.target.style.color = '#2c2c2c'}
-                  onMouseLeave={(e) => e.target.style.color = '#5a5a5a'}
-                >
-                  {link}
-                </Link>
-              ))}
-            </nav>
           </div>
         </div>
 
-        {/* WhatsApp FAB */}
-        <a
-          href="https://wa.me/1234567890"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            position: 'fixed',
-            bottom: '2rem',
-            right: '2rem',
-            width: '56px',
-            height: '56px',
-            borderRadius: '50%',
-            background: '#1a3a2e',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
-            transition: 'all 0.3s ease',
-            zIndex: 1000
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.1)';
-            e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.25)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1)';
-            e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.2)';
-          }}
-        >
-          <FaWhatsapp size={28} color="#fff" />
-        </a>
-
-        {/* Bottom Bar */}
-        <div 
-          style={{
-            borderTop: '1px solid rgba(0,0,0,0.06)',
-            paddingTop: '2rem',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '1rem'
-          }}
-        >
-          <div style={{ 
-            display: 'flex', 
-            gap: '2rem',
-            flexWrap: 'wrap',
-            justifyContent: 'center'
-          }}>
-            <Link 
-              to="/contact" 
-              style={{ fontSize: '0.9rem', color: '#5a5a5a', textDecoration: 'none', transition: 'color 0.3s ease' }}
-              onMouseEnter={(e) => e.target.style.color = '#2c2c2c'}
-              onMouseLeave={(e) => e.target.style.color = '#5a5a5a'}
-            >
-              Contact Us
-            </Link>
-            <Link 
-              to="/privacy-policy" 
-              style={{ fontSize: '0.9rem', color: '#5a5a5a', textDecoration: 'none', transition: 'color 0.3s ease' }}
-              onMouseEnter={(e) => e.target.style.color = '#2c2c2c'}
-              onMouseLeave={(e) => e.target.style.color = '#5a5a5a'}
-            >
-              Privacy Policy
-            </Link>
-            <Link 
-              to="/terms-and-conditions" 
-              style={{ fontSize: '0.9rem', color: '#5a5a5a', textDecoration: 'none', transition: 'color 0.3s ease' }}
-              onMouseEnter={(e) => e.target.style.color = '#2c2c2c'}
-              onMouseLeave={(e) => e.target.style.color = '#5a5a5a'}
-            >
-              Terms & Conditions
-            </Link>
+        <div style={{ 
+          borderTop: `1px solid ${colors.divider}`, 
+          paddingTop: '2rem', 
+          display: 'flex', 
+          flexDirection: 'column', 
+          md: { flexDirection: 'row' }, 
+          justifyContent: 'space-between', 
+          alignItems: 'center', 
+          gap: '1rem' 
+        }}>
+          <p style={{ color: colors.textSecondary, fontSize: '0.875rem' }}>© 2024 Artisan's Corner. All rights reserved.</p>
+          <div style={{ display: 'flex', gap: '1.5rem', color: colors.textSecondary }}>
+            <FaGithub size={20} style={{ cursor: 'pointer', transition: 'color 0.2s' }} onMouseEnter={(e)=>e.target.style.color=colors.primary} onMouseLeave={(e)=>e.target.style.color=colors.textSecondary} />
+            <FaInstagram size={20} style={{ cursor: 'pointer', transition: 'color 0.2s' }} onMouseEnter={(e)=>e.target.style.color=colors.primary} onMouseLeave={(e)=>e.target.style.color=colors.textSecondary} />
+            <FaTwitter size={20} style={{ cursor: 'pointer', transition: 'color 0.2s' }} onMouseEnter={(e)=>e.target.style.color=colors.primary} onMouseLeave={(e)=>e.target.style.color=colors.textSecondary} />
           </div>
-          
-          <p style={{ fontSize: '0.875rem', color: '#999', margin: 0, textAlign: 'center' }}>
-            © Artisan Corner {currentYear}. All Rights Reserved
-          </p>
         </div>
       </div>
-
-      {/* Back to Top Button */}
-      <button
-        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        style={{
-          position: 'fixed',
-          bottom: '2rem',
-          left: '2rem',
-          width: '48px',
-          height: '48px',
-          borderRadius: '8px',
-          background: '#fff',
-          border: '1px solid rgba(0,0,0,0.1)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          transition: 'all 0.3s ease',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-          zIndex: 1000
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.background = '#2c2c2c';
-          e.currentTarget.querySelector('svg').style.color = '#fff';
-          e.currentTarget.style.transform = 'translateY(-4px)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.background = '#fff';
-          e.currentTarget.querySelector('svg').style.color = '#2c2c2c';
-          e.currentTarget.style.transform = 'translateY(0)';
-        }}
-      >
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M10 15V5M10 5L5 10M10 5L15 10" stroke="#2c2c2c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </button>
     </footer>
   );
 };

@@ -23,47 +23,45 @@ export const ThemeProvider = ({ children }) => {
 
   const toggleTheme = () => setIsDark(!isDark);
 
-  // Material UI Color Palette
+  // Updated Color Palette for "Black-Purple" Aesthetic
   const theme = {
     isDark,
     toggleTheme,
     colors: isDark ? {
-      // Dark Mode - Material UI Dark
-      primary: '#90caf9',      // Light blue
-      primaryDark: '#42a5f5',
-      secondary: '#ce93d8',    // Light purple
-      background: '#121212',   // True dark
-      surface: '#1e1e1e',      // Elevated surface
-      surfaceLight: '#2d2d2d', // More elevated
-      text: '#ffffff',
-      textSecondary: '#b0b0b0',
-      border: '#383838',
-      error: '#f44336',
-      success: '#66bb6a',
-      warning: '#ffa726',
-      info: '#29b6f6',
-      divider: '#404040',
-      hover: 'rgba(255, 255, 255, 0.08)',
-      shadow: 'rgba(0, 0, 0, 0.5)',
+      // --- DARK MODE ---
+      primary: '#8B5CF6',      // Vibrant Purple (Buttons)
+      primaryDark: '#7C3AED',  // Darker Purple (Hover)
+      secondary: '#A78BFA',    // Light Purple
+      background: '#0F0E17',   // Deep Void Black (Not gray)
+      surface: '#1E1B29',      // Dark Purple-ish Gray (Cards/Footer)
+      surfaceLight: '#2D2B42', // Lighter Surface
+      text: '#FFFFFE',         // White
+      textSecondary: '#94A1B2',// Muted Text
+      border: '#2D2B42',       // Dark Border
+      error: '#FF5470',
+      success: '#2CB67D',
+      warning: '#FF8E3C',
+      divider: '#2D2B42',
+      hover: 'rgba(139, 92, 246, 0.1)', // Purple Tint Hover
+      shadow: 'rgba(0, 0, 0, 0.6)',
     } : {
-      // Light Mode - Material UI Light
-      primary: '#1976d2',      // Blue
-      primaryDark: '#1565c0',
-      secondary: '#9c27b0',    // Purple
-      background: '#fafafa',   // Light gray
-      surface: '#ffffff',      // White
-      surfaceLight: '#f5f5f5', // Light surface
-      text: '#212121',
-      textSecondary: '#757575',
-      border: '#e0e0e0',
-      error: '#d32f2f',
-      success: '#388e3c',
-      warning: '#f57c00',
-      info: '#0288d1',
-      divider: '#e0e0e0',
-      hover: 'rgba(0, 0, 0, 0.04)',
-      shadow: 'rgba(0, 0, 0, 0.2)',
-    }
+      // --- LIGHT MODE ---
+      primary: '#2E2A3B',      // Black with Purple Tint (Buttons)
+      primaryDark: '#1A1821',  // Near Black (Hover)
+      secondary: '#6D597A',    // Muted Purple
+      background: '#F9F8FC',   // Very Light Purple-White
+      surface: '#ffffff',      // Pure White
+      surfaceLight: '#F3F4F6',
+      text: '#2E2A3B',         // Dark Black-Purple
+      textSecondary: '#6B7280',
+      border: '#E5E7EB',
+      error: '#EF4444',
+      success: '#10B981',
+      warning: '#F59E0B',
+      divider: '#E5E7EB',
+      hover: 'rgba(46, 42, 59, 0.05)',
+      shadow: 'rgba(46, 42, 59, 0.1)',
+    },
   };
 
   return (
