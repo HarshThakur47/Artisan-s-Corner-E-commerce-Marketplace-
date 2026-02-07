@@ -4,8 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { register, reset } from '../store/slices/authSlice';
 import { toast } from 'react-toastify';
 import { FaEye, FaEyeSlash, FaUser, FaEnvelope, FaLock } from 'react-icons/fa';
+import { useTheme } from '../context/ThemeContext'; // 1. Import Theme
 
 const RegisterPage = () => {
+  const { colors, isDark } = useTheme(); // 2. Get Theme
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -86,22 +88,25 @@ const RegisterPage = () => {
     <div
       style={{
         minHeight: '100vh',
-        background: '#e8e4dc',
+        background: colors.background, // Dynamic Background
         paddingTop: '100px',
         paddingBottom: '80px',
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        transition: 'background 0.3s ease'
       }}
     >
-      {/* Decorative background elements */}
+      {/* Decorative background elements (Dynamic Colors) */}
       <div style={{
         position: 'absolute', top: '10%', right: '10%', width: '400px', height: '400px',
-        background: 'rgba(26, 58, 46, 0.08)', borderRadius: '50%', filter: 'blur(80px)',
+        background: isDark ? 'rgba(139, 92, 246, 0.1)' : 'rgba(26, 58, 46, 0.08)',
+        borderRadius: '50%', filter: 'blur(80px)',
         animation: 'float 8s ease-in-out infinite'
       }} />
       <div style={{
         position: 'absolute', bottom: '10%', left: '5%', width: '300px', height: '300px',
-        background: 'rgba(201, 125, 63, 0.06)', borderRadius: '50%', filter: 'blur(60px)',
+        background: isDark ? 'rgba(139, 92, 246, 0.05)' : 'rgba(201, 125, 63, 0.06)',
+        borderRadius: '50%', filter: 'blur(60px)',
         animation: 'float 6s ease-in-out infinite reverse'
       }} />
 
@@ -115,40 +120,43 @@ const RegisterPage = () => {
         <div style={{ maxWidth: '480px', margin: '0 auto', animation: 'slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1)' }}>
           {/* Glass Card */}
           <div style={{
-            background: 'rgba(255, 255, 255, 0.85)',
+            background: isDark ? 'rgba(30, 27, 41, 0.7)' : 'rgba(255, 255, 255, 0.85)',
             backdropFilter: 'blur(20px) saturate(180%)',
             WebkitBackdropFilter: 'blur(20px) saturate(180%)',
             borderRadius: '24px',
             padding: '3rem',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.12), 0 0 0 1px rgba(255,255,255,0.8)',
-            border: '1px solid rgba(255, 255, 255, 0.8)'
+            boxShadow: `0 8px 32px ${colors.shadow}, 0 0 0 1px ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.8)'}`,
+            border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.8)'}`,
+            transition: 'background 0.3s ease, border 0.3s ease'
           }}>
             
             {/* Header */}
             <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
               <div style={{
-                width: '64px', height: '64px', background: '#1a3a2e', borderRadius: '16px',
+                width: '64px', height: '64px', 
+                background: colors.primary, 
+                borderRadius: '16px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem'
               }}>
-                <span style={{ color: '#e8e4dc', fontSize: '24px', fontWeight: 'bold' }}>A</span>
+                <span style={{ color: '#fff', fontSize: '24px', fontWeight: 'bold' }}>A</span>
               </div>
-              <h1 style={{ fontSize: '2rem', fontWeight: '600', color: '#2c2c2c', marginBottom: '0.5rem' }}>
+              <h1 style={{ fontSize: '2rem', fontWeight: '600', color: colors.text, marginBottom: '0.5rem' }}>
                 Create Account
               </h1>
-              <p style={{ fontSize: '1rem', color: '#5a5a5a' }}>Join the Artisan's Corner community</p>
+              <p style={{ fontSize: '1rem', color: colors.textSecondary }}>Join the Artisan's Corner community</p>
             </div>
 
             <form onSubmit={handleSubmit}>
               
               {/* Name Field */}
               <div style={{ marginBottom: '1.5rem', position: 'relative' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#2c2c2c', marginBottom: '0.5rem' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: colors.text, marginBottom: '0.5rem' }}>
                   Full Name
                 </label>
                 <div style={{ position: 'relative' }}>
                   <div style={{
                     position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)',
-                    transition: 'all 0.3s ease', color: focusedField === 'name' ? '#1a3a2e' : '#999'
+                    transition: 'all 0.3s ease', color: focusedField === 'name' ? colors.primary : colors.textSecondary
                   }}>
                     <FaUser size={16} />
                   </div>
@@ -162,10 +170,12 @@ const RegisterPage = () => {
                     placeholder="Enter your full name"
                     style={{
                       width: '100%', padding: '14px 16px 14px 48px',
-                      border: `2px solid ${focusedField === 'name' ? '#2c2c2c' : '#d4d0c8'}`,
+                      border: `2px solid ${focusedField === 'name' ? colors.primary : colors.border}`,
                       borderRadius: '12px', fontSize: '15px', transition: 'all 0.3s ease',
-                      outline: 'none', background: focusedField === 'name' ? 'rgba(26, 58, 46, 0.02)' : '#fff',
-                      boxShadow: focusedField === 'name' ? '0 0 0 4px rgba(44,44,44,0.08)' : 'none'
+                      outline: 'none', 
+                      background: focusedField === 'name' ? (isDark ? 'rgba(255,255,255,0.05)' : 'rgba(26, 58, 46, 0.02)') : (isDark ? 'rgba(0,0,0,0.2)' : '#fff'),
+                      color: colors.text,
+                      boxShadow: focusedField === 'name' ? `0 0 0 4px ${isDark ? 'rgba(139, 92, 246, 0.1)' : 'rgba(44,44,44,0.08)'}` : 'none'
                     }}
                   />
                 </div>
@@ -173,13 +183,13 @@ const RegisterPage = () => {
 
               {/* Email Field */}
               <div style={{ marginBottom: '1.5rem', position: 'relative' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#2c2c2c', marginBottom: '0.5rem' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: colors.text, marginBottom: '0.5rem' }}>
                   Email Address
                 </label>
                 <div style={{ position: 'relative' }}>
                   <div style={{
                     position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)',
-                    transition: 'all 0.3s ease', color: focusedField === 'email' ? '#1a3a2e' : '#999'
+                    transition: 'all 0.3s ease', color: focusedField === 'email' ? colors.primary : colors.textSecondary
                   }}>
                     <FaEnvelope size={16} />
                   </div>
@@ -193,10 +203,12 @@ const RegisterPage = () => {
                     placeholder="Enter your email"
                     style={{
                       width: '100%', padding: '14px 16px 14px 48px',
-                      border: `2px solid ${focusedField === 'email' ? '#2c2c2c' : '#d4d0c8'}`,
+                      border: `2px solid ${focusedField === 'email' ? colors.primary : colors.border}`,
                       borderRadius: '12px', fontSize: '15px', transition: 'all 0.3s ease',
-                      outline: 'none', background: focusedField === 'email' ? 'rgba(26, 58, 46, 0.02)' : '#fff',
-                      boxShadow: focusedField === 'email' ? '0 0 0 4px rgba(44,44,44,0.08)' : 'none'
+                      outline: 'none', 
+                      background: focusedField === 'email' ? (isDark ? 'rgba(255,255,255,0.05)' : 'rgba(26, 58, 46, 0.02)') : (isDark ? 'rgba(0,0,0,0.2)' : '#fff'),
+                      color: colors.text,
+                      boxShadow: focusedField === 'email' ? `0 0 0 4px ${isDark ? 'rgba(139, 92, 246, 0.1)' : 'rgba(44,44,44,0.08)'}` : 'none'
                     }}
                   />
                 </div>
@@ -204,13 +216,13 @@ const RegisterPage = () => {
 
               {/* Password Field */}
               <div style={{ marginBottom: '1.5rem', position: 'relative' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#2c2c2c', marginBottom: '0.5rem' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: colors.text, marginBottom: '0.5rem' }}>
                   Password
                 </label>
                 <div style={{ position: 'relative' }}>
                   <div style={{
                     position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)',
-                    transition: 'all 0.3s ease', color: focusedField === 'password' ? '#1a3a2e' : '#999'
+                    transition: 'all 0.3s ease', color: focusedField === 'password' ? colors.primary : colors.textSecondary
                   }}>
                     <FaLock size={16} />
                   </div>
@@ -224,10 +236,12 @@ const RegisterPage = () => {
                     placeholder="Enter your password"
                     style={{
                       width: '100%', padding: '14px 48px 14px 48px',
-                      border: `2px solid ${focusedField === 'password' ? '#2c2c2c' : '#d4d0c8'}`,
+                      border: `2px solid ${focusedField === 'password' ? colors.primary : colors.border}`,
                       borderRadius: '12px', fontSize: '15px', transition: 'all 0.3s ease',
-                      outline: 'none', background: focusedField === 'password' ? 'rgba(26, 58, 46, 0.02)' : '#fff',
-                      boxShadow: focusedField === 'password' ? '0 0 0 4px rgba(44,44,44,0.08)' : 'none'
+                      outline: 'none', 
+                      background: focusedField === 'password' ? (isDark ? 'rgba(255,255,255,0.05)' : 'rgba(26, 58, 46, 0.02)') : (isDark ? 'rgba(0,0,0,0.2)' : '#fff'),
+                      color: colors.text,
+                      boxShadow: focusedField === 'password' ? `0 0 0 4px ${isDark ? 'rgba(139, 92, 246, 0.1)' : 'rgba(44,44,44,0.08)'}` : 'none'
                     }}
                   />
                   <button
@@ -235,8 +249,11 @@ const RegisterPage = () => {
                     onClick={() => setShowPassword(!showPassword)}
                     style={{
                       position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)',
-                      background: 'transparent', border: 'none', cursor: 'pointer', color: '#999',
+                      background: 'transparent', border: 'none', cursor: 'pointer', color: colors.textSecondary,
+                      transition: 'color 0.3s ease'
                     }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = colors.primary)}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = colors.textSecondary)}
                   >
                     {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
                   </button>
@@ -245,13 +262,13 @@ const RegisterPage = () => {
 
               {/* Confirm Password Field */}
               <div style={{ marginBottom: '1.5rem', position: 'relative' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#2c2c2c', marginBottom: '0.5rem' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: colors.text, marginBottom: '0.5rem' }}>
                   Confirm Password
                 </label>
                 <div style={{ position: 'relative' }}>
                   <div style={{
                     position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)',
-                    transition: 'all 0.3s ease', color: focusedField === 'confirmPassword' ? '#1a3a2e' : '#999'
+                    transition: 'all 0.3s ease', color: focusedField === 'confirmPassword' ? colors.primary : colors.textSecondary
                   }}>
                     <FaLock size={16} />
                   </div>
@@ -265,10 +282,12 @@ const RegisterPage = () => {
                     placeholder="Confirm your password"
                     style={{
                       width: '100%', padding: '14px 48px 14px 48px',
-                      border: `2px solid ${focusedField === 'confirmPassword' ? '#2c2c2c' : '#d4d0c8'}`,
+                      border: `2px solid ${focusedField === 'confirmPassword' ? colors.primary : colors.border}`,
                       borderRadius: '12px', fontSize: '15px', transition: 'all 0.3s ease',
-                      outline: 'none', background: focusedField === 'confirmPassword' ? 'rgba(26, 58, 46, 0.02)' : '#fff',
-                      boxShadow: focusedField === 'confirmPassword' ? '0 0 0 4px rgba(44,44,44,0.08)' : 'none'
+                      outline: 'none', 
+                      background: focusedField === 'confirmPassword' ? (isDark ? 'rgba(255,255,255,0.05)' : 'rgba(26, 58, 46, 0.02)') : (isDark ? 'rgba(0,0,0,0.2)' : '#fff'),
+                      color: colors.text,
+                      boxShadow: focusedField === 'confirmPassword' ? `0 0 0 4px ${isDark ? 'rgba(139, 92, 246, 0.1)' : 'rgba(44,44,44,0.08)'}` : 'none'
                     }}
                   />
                   <button
@@ -276,8 +295,11 @@ const RegisterPage = () => {
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     style={{
                       position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)',
-                      background: 'transparent', border: 'none', cursor: 'pointer', color: '#999',
+                      background: 'transparent', border: 'none', cursor: 'pointer', color: colors.textSecondary,
+                      transition: 'color 0.3s ease'
                     }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = colors.primary)}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = colors.textSecondary)}
                   >
                     {showConfirmPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
                   </button>
@@ -293,6 +315,8 @@ const RegisterPage = () => {
                 style={{
                   width: '100%', padding: '16px', fontSize: '16px', fontWeight: '600',
                   position: 'relative', overflow: 'hidden', opacity: isLoading ? 0.7 : 1,
+                  background: `linear-gradient(135deg, ${colors.primary}, ${colors.primaryDark})`,
+                  color: '#fff', border: 'none', borderRadius: '12px',
                   cursor: isLoading ? 'not-allowed' : 'pointer'
                 }}
               >
@@ -309,9 +333,9 @@ const RegisterPage = () => {
             </form>
 
             <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-              <p style={{ fontSize: '15px', color: '#5a5a5a' }}>
+              <p style={{ fontSize: '15px', color: colors.textSecondary }}>
                 Already have an account?{' '}
-                <Link to="/login" style={{ color: '#1a3a2e', fontWeight: '600', textDecoration: 'none' }}>
+                <Link to="/login" style={{ color: colors.primary, fontWeight: '600', textDecoration: 'none' }}>
                   Sign in
                 </Link>
               </p>

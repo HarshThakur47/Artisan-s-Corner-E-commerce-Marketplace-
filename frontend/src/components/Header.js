@@ -381,7 +381,7 @@ const Header = () => {
               onMouseEnter={(e) => e.currentTarget.style.background = colors.hover}
               onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
             >
-              <div style={{ position: 'relative', width: '24px', height: '24px' }}>
+              <div style={{ position: 'relative', width: '24px', height: '24px' , paddingRight: 22 }}>
                 <FaBars 
                   size={24} 
                   color={colors.text}
