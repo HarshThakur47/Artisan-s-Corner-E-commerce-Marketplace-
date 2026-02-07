@@ -190,7 +190,7 @@ const Header = () => {
                 e.currentTarget.style.transform = 'scale(1)';
               }}
             >
-              <FaShoppingCart size={20} color={colors.text} />
+              <FaShoppingCart size={20} color={colors.text} style={{ paddingTop: 5 , paddingRight: 2.5}}/>
               {cartItemsCount > 0 && (
                 <span style={{
                   position: 'absolute',
