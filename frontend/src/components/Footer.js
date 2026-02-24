@@ -1,195 +1,76 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaGithub, FaInstagram, FaTwitter, FaTimes } from 'react-icons/fa';
-import { useTheme } from '../context/ThemeContext';
 
 const Footer = () => {
-  const { colors, isDark } = useTheme();
   const [showPrivacy, setShowPrivacy] = useState(false);
-
-  // Toggle scrolling on body when modal is open
-  React.useEffect(() => {
-    if (showPrivacy) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-  }, [showPrivacy]);
 
   return (
     <>
-      <footer 
-        style={{
-          background: colors.surface,
-          borderTop: `1px solid ${colors.border}`,
-          padding: '4rem 0 2rem',
-          marginTop: 'auto',
-          color: colors.text,
-          transition: 'background 0.3s ease, color 0.3s ease'
-        }}
-      >
-        <br />
-        <br />
-        <br />
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12"> {/* Changed to 3 columns */}
+      <footer className="footer">
+        <div className="container">
+          <div className="grid-3" style={{ marginBottom: '3rem' }}>
             
             {/* Brand */}
-            <div className="col-span-1">
-              <div className="flex items-center gap-2 mb-4">
-                <div style={{ 
-                  width: '32px', height: '32px', 
-                  background: colors.primary, 
-                  borderRadius: '8px', 
-                  display: 'flex', alignItems: 'center', justifyContent: 'center' 
-                }}>
-                  <span style={{ color: '#fff', fontWeight: 'bold' }}>A</span>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+                <div style={{ width: '32px', height: '32px', background: 'var(--primary)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ color: 'white', fontWeight: 'bold' }}>A</span>
                 </div>
                 <span style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>Artisan Corner</span>
               </div>
-              <p style={{ color: colors.textSecondary, fontSize: '0.9rem', lineHeight: '1.6' }}>
-                Connecting you with India's finest artisans and their handcrafted legacy. Built with love for culture. Every purchase you make directly supports a craftsman's livelihood and helps preserve a dying art form for future generations.
+              <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                Connecting you with India's finest artisans. Every purchase supports a craftsman's livelihood.
               </p>
             </div>
 
-            {/* Shop Links */}
-            <div>
-              <h3 style={{ fontWeight: 'bold', marginBottom: '1.5rem' }}>Shop</h3>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                <li><Link to="/products" style={{ color: colors.textSecondary, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e)=>e.target.style.color=colors.primary} onMouseLeave={(e)=>e.target.style.color=colors.textSecondary}>All Products</Link></li>
-                <li><Link to="/products?category=Ceramics" style={{ color: colors.textSecondary, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e)=>e.target.style.color=colors.primary} onMouseLeave={(e)=>e.target.style.color=colors.textSecondary}>Ceramics</Link></li>
-                <li><Link to="/products?category=Textiles" style={{ color: colors.textSecondary, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e)=>e.target.style.color=colors.primary} onMouseLeave={(e)=>e.target.style.color=colors.textSecondary}>Textiles</Link></li>
-              </ul>
+            {/* Links */}
+            <div className="grid-2" style={{ gap: '2rem' }}>
+              <div>
+                <h3 style={{ fontWeight: 'bold', marginBottom: '1rem' }}>Shop</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <Link to="/products" className="nav-link">All Products</Link>
+                  <Link to="/products?category=Ceramics" className="nav-link">Ceramics</Link>
+                </div>
+              </div>
+              <div>
+                <h3 style={{ fontWeight: 'bold', marginBottom: '1rem' }}>Support</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <button onClick={() => setShowPrivacy(true)} className="nav-link" style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', font: 'inherit' }}>Privacy Policy</button>
+                  <a href="mailto:support@artisancorner.com" className="nav-link">Contact Us</a>
+                </div>
+              </div>
             </div>
 
-            {/* Company Links */}
+            {/* Social */}
             <div>
-              <h3 style={{ fontWeight: 'bold', marginBottom: '1.5rem' }}>Company</h3>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                <li>
-                  <button 
-                    onClick={() => setShowPrivacy(true)}
-                    style={{ 
-                      background: 'none', border: 'none', padding: 0, cursor: 'pointer',
-                      color: colors.textSecondary, fontSize: '1rem', fontFamily: 'inherit',
-                      transition: 'color 0.2s'
-                    }} 
-                    onMouseEnter={(e)=>e.target.style.color=colors.primary} 
-                    onMouseLeave={(e)=>e.target.style.color=colors.textSecondary}
-                  >
-                    Privacy Policy
-                  </button>
-                </li>
-                <li>
-                  <a 
-                    href="mailto:harshwardhansinghthakur7227@gmail.com"
-                    style={{ color: colors.textSecondary, textDecoration: 'none', transition: 'color 0.2s' }} 
-                    onMouseEnter={(e)=>e.target.style.color=colors.primary} 
-                    onMouseLeave={(e)=>e.target.style.color=colors.textSecondary}
-                  >
-                    Contact Us
-                  </a>
-                </li>
-              </ul>
+               <h3 style={{ fontWeight: 'bold', marginBottom: '1rem' }}>Follow Us</h3>
+               <div style={{ display: 'flex', gap: '1rem', color: 'var(--text-secondary)' }}>
+                 <FaGithub size={24} style={{ cursor: 'pointer' }} />
+                 <FaInstagram size={24} style={{ cursor: 'pointer' }} />
+                 <FaTwitter size={24} style={{ cursor: 'pointer' }} />
+               </div>
             </div>
           </div>
 
-          <div style={{ 
-            borderTop: `1px solid ${colors.divider}`, 
-            paddingTop: '2rem', 
-            display: 'flex', 
-            flexDirection: 'column', 
-            md: { flexDirection: 'row' }, 
-            justifyContent: 'space-between', 
-            alignItems: 'center', 
-            gap: '1rem' 
-          }}>
-            <p style={{ color: colors.textSecondary, fontSize: '0.875rem' }}>© 2024 Artisan's Corner. All rights reserved.</p>
-            <div style={{ display: 'flex', gap: '1.5rem', color: colors.textSecondary }}>
-              <FaGithub size={20} style={{ cursor: 'pointer', transition: 'color 0.2s' }} onMouseEnter={(e)=>e.target.style.color=colors.primary} onMouseLeave={(e)=>e.target.style.color=colors.textSecondary} />
-              <FaInstagram size={20} style={{ cursor: 'pointer', transition: 'color 0.2s' }} onMouseEnter={(e)=>e.target.style.color=colors.primary} onMouseLeave={(e)=>e.target.style.color=colors.textSecondary} />
-              <FaTwitter size={20} style={{ cursor: 'pointer', transition: 'color 0.2s' }} onMouseEnter={(e)=>e.target.style.color=colors.primary} onMouseLeave={(e)=>e.target.style.color=colors.textSecondary} />
-            </div>
+          <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
+            © 2026 Artisan's Corner. All rights reserved.
           </div>
         </div>
       </footer>
 
-      {/* Privacy Policy Modal */}
+      {/* Privacy Modal */}
       {showPrivacy && (
-        <div style={{
-          position: 'fixed',
-          top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          backdropFilter: 'blur(8px)',
-          zIndex: 9999,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: '20px'
-        }}>
-          <div style={{
-            background: colors.surface,
-            width: '100%',
-            maxWidth: '600px',
-            maxHeight: '80vh',
-            borderRadius: '16px',
-            boxShadow: `0 20px 50px ${isDark ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.2)'}`,
-            position: 'relative',
-            display: 'flex',
-            flexDirection: 'column',
-            border: `1px solid ${colors.border}`
-          }}>
-            {/* Modal Header */}
-            <div style={{ padding: '20px', borderBottom: `1px solid ${colors.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: colors.text }}>Privacy Policy</h2>
-              <button 
-                onClick={() => setShowPrivacy(false)}
-                style={{ background: 'none', border: 'none', color: colors.textSecondary, cursor: 'pointer', fontSize: '1.2rem' }}
-              >
-                <FaTimes />
-              </button>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(5px)' }}>
+          <div className="glass-card" style={{ maxWidth: '600px', maxHeight: '80vh', overflowY: 'auto', margin: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+              <h2>Privacy Policy</h2>
+              <button onClick={() => setShowPrivacy(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text)' }}><FaTimes size={24}/></button>
             </div>
-
-            {/* Scrollable Content */}
-            <div style={{ padding: '24px', overflowY: 'auto', color: colors.textSecondary, lineHeight: '1.7' }}>
-              <p><strong>Last Updated: February 2026</strong></p>
-              <br/>
-              <p>Welcome to Artisan's Corner. We value your trust and are committed to protecting your personal information.</p>
-              
-              <h3 style={{ color: colors.text, fontWeight: 'bold', marginTop: '1.5rem', marginBottom: '0.5rem' }}>1. Information We Collect</h3>
-              <p>We collect information you provide directly to us, such as when you create an account, make a purchase, or contact us. This may include your name, email address, shipping address, and payment information.</p>
-
-              <h3 style={{ color: colors.text, fontWeight: 'bold', marginTop: '1.5rem', marginBottom: '0.5rem' }}>2. How We Use Your Information</h3>
-              <p>We use the information we collect to process your orders, communicate with you, and improve our services. We do not sell your personal data to third parties.</p>
-
-              <h3 style={{ color: colors.text, fontWeight: 'bold', marginTop: '1.5rem', marginBottom: '0.5rem' }}>3. Data Security</h3>
-              <p>We implement appropriate technical and organizational measures to protect your personal data against unauthorized access, alteration, disclosure, or destruction.</p>
-
-              <h3 style={{ color: colors.text, fontWeight: 'bold', marginTop: '1.5rem', marginBottom: '0.5rem' }}>4. Cookies</h3>
-              <p>We use cookies to enhance your browsing experience and analyze our traffic. You can choose to disable cookies through your browser settings.</p>
-
-              <h3 style={{ color: colors.text, fontWeight: 'bold', marginTop: '1.5rem', marginBottom: '0.5rem' }}>5. Contact Us</h3>
-              <p>If you have any questions about this Privacy Policy, please contact us at <strong>harshwardhansinghthakur7227@gmail.com</strong>.</p>
-            </div>
-            
-            {/* Modal Footer */}
-            <div style={{ padding: '16px 24px', borderTop: `1px solid ${colors.border}`, textAlign: 'right' }}>
-               <button 
-                 onClick={() => setShowPrivacy(false)}
-                 className="btn-primary"
-                 style={{
-                   background: colors.primary,
-                   color: '#fff',
-                   border: 'none',
-                   padding: '10px 20px',
-                   borderRadius: '8px',
-                   cursor: 'pointer',
-                   fontWeight: '600'
-                 }}
-               >
-                 Close
-               </button>
-            </div>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8 }}>
+              At Artisan's Corner, we value your privacy. We only collect essential information needed to process your orders and improve your shopping experience. We never sell your data to third parties.
+            </p>
+            <button className="btn-primary" onClick={() => setShowPrivacy(false)} style={{ marginTop: '2rem' }}>Close</button>
           </div>
         </div>
       )}

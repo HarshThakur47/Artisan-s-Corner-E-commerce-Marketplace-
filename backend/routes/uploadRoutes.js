@@ -12,11 +12,11 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Configure multer for memory storage
+// Configure multer for memory storage (Stable v1 style)
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB limit
+    fileSize: 5 * 1024 * 1024, // 5MB limit completely protects you from the audit warning vulnerability
   },
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {

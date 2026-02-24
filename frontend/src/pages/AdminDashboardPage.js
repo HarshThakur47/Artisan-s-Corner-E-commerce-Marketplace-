@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { FaEdit, FaTrash, FaPlus, FaBox, FaShoppingBag, FaUsers } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaPlus, FaBox, FaShoppingBag } from 'react-icons/fa';
 import { getProducts, deleteProduct, createProduct } from '../store/slices/productSlice';
 import { getOrders } from '../store/slices/orderSlice';
 import { toast } from 'react-toastify';
-import { useTheme } from '../context/ThemeContext';
 
 const AdminDashboardPage = () => {
   const [activeTab, setActiveTab] = useState('products');
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { colors } = useTheme();
 
   const productState = useSelector((state) => state.product);
   const orderState = useSelector((state) => state.order);
@@ -41,50 +39,43 @@ const AdminDashboardPage = () => {
     }
   };
 
-  const statCardStyle = {
-    background: colors.surface, padding: '2rem', borderRadius: '16px',
-    boxShadow: `0 4px 12px ${colors.shadow}`, border: `1px solid ${colors.border}`,
-    display: 'flex', justifyContent: 'space-between', alignItems: 'center'
-  };
-
   return (
-    <div style={{ minHeight: '100vh', background: colors.background, paddingTop: '100px', paddingBottom: '80px' }}>
-      <div className="container mx-auto px-4 max-w-7xl">
-        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '2rem', color: colors.text }}>Admin Dashboard</h1>
+    <div className="page-wrapper">
+      <div className="container">
+        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '2rem' }}>Admin Dashboard</h1>
 
         {/* Stats Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
-          <div style={statCardStyle}>
+        <div className="grid-4" style={{ marginBottom: '3rem' }}>
+          <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
-              <p style={{ color: colors.textSecondary, fontSize: '0.875rem' }}>Total Products</p>
-              <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: colors.text }}>{productState.products.length}</h2>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Total Products</p>
+              <h2 style={{ fontSize: '2rem', fontWeight: 'bold' }}>{productState.products.length}</h2>
             </div>
-            <div style={{ width: '50px', height: '50px', borderRadius: '12px', background: `${colors.primary}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: colors.primary, fontSize: '1.5rem' }}>
+            <div style={{ width: '50px', height: '50px', borderRadius: '12px', background: 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3B82F6', fontSize: '1.5rem' }}>
               <FaBox />
             </div>
           </div>
           
-          <div style={statCardStyle}>
+          <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
-              <p style={{ color: colors.textSecondary, fontSize: '0.875rem' }}>Total Orders</p>
-              <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: colors.text }}>{orderState.orders.length}</h2>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Total Orders</p>
+              <h2 style={{ fontSize: '2rem', fontWeight: 'bold' }}>{orderState.orders.length}</h2>
             </div>
-            <div style={{ width: '50px', height: '50px', borderRadius: '12px', background: `${colors.success}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: colors.success, fontSize: '1.5rem' }}>
+            <div style={{ width: '50px', height: '50px', borderRadius: '12px', background: 'rgba(16, 185, 129, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#10B981', fontSize: '1.5rem' }}>
               <FaShoppingBag />
             </div>
           </div>
         </div>
 
         {/* Tabs */}
-        <div style={{ display: 'flex', gap: '2rem', borderBottom: `2px solid ${colors.divider}`, marginBottom: '2rem' }}>
+        <div className="tab-group">
           {['products', 'orders'].map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab)} style={{
-              padding: '1rem 0', background: 'transparent', border: 'none',
-              fontSize: '1rem', fontWeight: activeTab === tab ? '600' : '500',
-              color: activeTab === tab ? colors.primary : colors.textSecondary,
-              borderBottom: activeTab === tab ? `3px solid ${colors.primary}` : 'none',
-              cursor: 'pointer', textTransform: 'capitalize'
-            }}>
+            <button 
+              key={tab} 
+              onClick={() => setActiveTab(tab)} 
+              className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
+              style={{ textTransform: 'capitalize' }}
+            >
               {tab}
             </button>
           ))}
@@ -92,36 +83,36 @@ const AdminDashboardPage = () => {
 
         {/* PRODUCTS TABLE */}
         {activeTab === 'products' && (
-          <div style={{ background: colors.surface, borderRadius: '16px', overflow: 'hidden', boxShadow: `0 4px 12px ${colors.shadow}`, border: `1px solid ${colors.border}` }}>
-            <div style={{ padding: '1.5rem', borderBottom: `1px solid ${colors.divider}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h2 style={{ fontWeight: 'bold', color: colors.text }}>Product List</h2>
-              <button onClick={handleCreateProduct} style={{
-                background: colors.primary, color: '#fff', border: 'none', padding: '10px 20px',
-                borderRadius: '8px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem'
-              }}>
+          <div className="glass-card" style={{ padding: '0', overflow: 'hidden' }}>
+            <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h2 style={{ fontWeight: 'bold', fontSize: '1.25rem' }}>Product List</h2>
+              <button onClick={handleCreateProduct} className="btn-primary" style={{ width: 'auto', padding: '10px 20px', gap: '8px' }}>
                 <FaPlus /> Create
               </button>
             </div>
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead style={{ background: colors.surfaceLight }}>
+            <div className="table-container">
+              <table className="styled-table">
+                <thead style={{ background: 'var(--surface-light)' }}>
                   <tr>
-                    {['ID', 'Name', 'Price', 'Category', 'Stock', 'Actions'].map(h => (
-                      <th key={h} style={{ padding: '1rem', textAlign: 'left', fontSize: '0.875rem', color: colors.textSecondary, fontWeight: '600' }}>{h}</th>
-                    ))}
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Category</th>
+                    <th>Stock</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {productState.products.map(product => (
-                    <tr key={product._id} style={{ borderBottom: `1px solid ${colors.divider}` }}>
-                      <td style={{ padding: '1rem', color: colors.text }}>{product._id.substring(0, 6)}...</td>
-                      <td style={{ padding: '1rem', color: colors.text, fontWeight: '500' }}>{product.name}</td>
-                      <td style={{ padding: '1rem', color: colors.text }}>₹{product.price}</td>
-                      <td style={{ padding: '1rem', color: colors.textSecondary }}>{product.category}</td>
-                      <td style={{ padding: '1rem', color: colors.text }}>{product.countInStock}</td>
-                      <td style={{ padding: '1rem' }}>
-                        <Link to={`/admin/product/${product._id}/edit`} style={{ color: colors.primary, marginRight: '1rem' }}><FaEdit /></Link>
-                        <button onClick={() => handleDeleteProduct(product._id)} style={{ color: colors.error, background: 'transparent', border: 'none', cursor: 'pointer' }}><FaTrash /></button>
+                    <tr key={product._id}>
+                      <td>{product._id.substring(0, 6)}...</td>
+                      <td style={{ fontWeight: '500' }}>{product.name}</td>
+                      <td>₹{product.price}</td>
+                      <td style={{ color: 'var(--text-secondary)' }}>{product.category}</td>
+                      <td>{product.countInStock}</td>
+                      <td>
+                        <Link to={`/admin/product/${product._id}/edit`} style={{ color: 'var(--primary)', marginRight: '1rem' }}><FaEdit /></Link>
+                        <button onClick={() => handleDeleteProduct(product._id)} style={{ color: 'var(--error)', background: 'transparent', border: 'none', cursor: 'pointer' }}><FaTrash /></button>
                       </td>
                     </tr>
                   ))}
@@ -133,34 +124,42 @@ const AdminDashboardPage = () => {
 
         {/* ORDERS TABLE */}
         {activeTab === 'orders' && (
-          <div style={{ background: colors.surface, borderRadius: '16px', overflow: 'hidden', boxShadow: `0 4px 12px ${colors.shadow}`, border: `1px solid ${colors.border}` }}>
-            <div style={{ padding: '1.5rem', borderBottom: `1px solid ${colors.divider}` }}>
-              <h2 style={{ fontWeight: 'bold', color: colors.text }}>All Orders</h2>
+          <div className="glass-card" style={{ padding: '0', overflow: 'hidden' }}>
+            <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--border)' }}>
+              <h2 style={{ fontWeight: 'bold', fontSize: '1.25rem' }}>All Orders</h2>
             </div>
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead style={{ background: colors.surfaceLight }}>
+            <div className="table-container">
+              <table className="styled-table">
+                <thead style={{ background: 'var(--surface-light)' }}>
                   <tr>
-                    {['ID', 'User', 'Date', 'Total', 'Paid', 'Delivered', 'Action'].map(h => (
-                      <th key={h} style={{ padding: '1rem', textAlign: 'left', fontSize: '0.875rem', color: colors.textSecondary, fontWeight: '600' }}>{h}</th>
-                    ))}
+                    <th>ID</th>
+                    <th>User</th>
+                    <th>Date</th>
+                    <th>Total</th>
+                    <th>Paid</th>
+                    <th>Delivered</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {orderState.orders.map(order => (
-                    <tr key={order._id} style={{ borderBottom: `1px solid ${colors.divider}` }}>
-                      <td style={{ padding: '1rem', color: colors.text }}>{order._id.substring(0, 6)}...</td>
-                      <td style={{ padding: '1rem', color: colors.text }}>{order.user?.name || 'Deleted User'}</td>
-                      <td style={{ padding: '1rem', color: colors.textSecondary }}>{order.createdAt.substring(0, 10)}</td>
-                      <td style={{ padding: '1rem', color: colors.text }}>₹{order.totalPrice}</td>
-                      <td style={{ padding: '1rem', color: order.isPaid ? colors.success : colors.error, fontWeight: '600' }}>
-                        {order.isPaid ? 'Paid' : 'Not Paid'}
+                    <tr key={order._id}>
+                      <td>{order._id.substring(0, 6)}...</td>
+                      <td>{order.user?.name || 'Deleted User'}</td>
+                      <td style={{ color: 'var(--text-secondary)' }}>{order.createdAt.substring(0, 10)}</td>
+                      <td>₹{order.totalPrice}</td>
+                      <td>
+                        <span className={`badge ${order.isPaid ? 'badge-success' : 'badge-danger'}`}>
+                          {order.isPaid ? 'Paid' : 'Not Paid'}
+                        </span>
                       </td>
-                      <td style={{ padding: '1rem', color: order.isDelivered ? colors.success : colors.warning, fontWeight: '600' }}>
-                        {order.isDelivered ? 'Delivered' : 'Pending'}
+                      <td>
+                        <span className={`badge ${order.isDelivered ? 'badge-success' : 'badge-warning'}`}>
+                          {order.isDelivered ? 'Delivered' : 'Pending'}
+                        </span>
                       </td>
-                      <td style={{ padding: '1rem' }}>
-                        <Link to={`/order/${order._id}`} style={{ padding: '6px 12px', background: colors.primary, color: '#fff', borderRadius: '6px', textDecoration: 'none', fontSize: '0.875rem' }}>View</Link>
+                      <td>
+                        <Link to={`/order/${order._id}`} className="btn-primary" style={{ padding: '6px 12px', fontSize: '0.8rem', width: 'auto', display: 'inline-block' }}>View</Link>
                       </td>
                     </tr>
                   ))}

@@ -5,11 +5,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { getProduct, updateProduct, reset } from '../store/slices/productSlice';
 import { FaArrowLeft, FaUpload, FaSave } from 'react-icons/fa';
-import { useTheme } from '../context/ThemeContext'; // 1. Import Theme Context
+import { BASE_URL } from '../utils/config';
 
 const ProductEditPage = () => {
   const { id: productId } = useParams();
-  const { colors } = useTheme(); // 2. Get Colors
   
   const [name, setName] = useState('');
   const [price, setPrice] = useState(0);
@@ -30,9 +29,7 @@ const ProductEditPage = () => {
 
   useEffect(() => {
     if (isSuccess && product && product._id === productId) {
-        // If update was successful (and we are not just loading the page for the first time)
-        // Note: You might need a more robust check here depending on your slice logic
-        // For now, we rely on the submit handler's result check.
+        // Success logic handled in submit
     } 
     
     if (!product || product._id !== productId) {
@@ -61,8 +58,7 @@ const ProductEditPage = () => {
         },
       };
 
-      // Ensure this URL matches your backend configuration
-      const { data } = await axios.post('http://localhost:5000/api/upload', formData, config);
+      const { data } = await axios.post(`${BASE_URL}/upload`, formData, config);
 
       setImage(data.url);
       setUploading(false);
@@ -97,138 +93,92 @@ const ProductEditPage = () => {
     }
   };
 
-  // Common Styles
-  const inputStyle = {
-    width: '100%',
-    padding: '12px 16px',
-    borderRadius: '10px',
-    border: `2px solid ${colors.border}`,
-    background: colors.surface,
-    color: colors.text,
-    fontSize: '15px',
-    outline: 'none',
-    transition: 'all 0.3s ease'
-  };
-
-  const labelStyle = {
-    display: 'block',
-    marginBottom: '0.5rem',
-    fontSize: '0.875rem',
-    fontWeight: '600',
-    color: colors.textSecondary
-  };
-
-  const handleFocus = (e) => e.target.style.borderColor = colors.primary;
-  const handleBlur = (e) => e.target.style.borderColor = colors.border;
-
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: colors.background,
-      paddingTop: '100px',
-      paddingBottom: '80px'
-    }}>
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="page-wrapper">
+      <div className="container" style={{ maxWidth: '800px' }}>
         
         {/* Back Button */}
         <Link 
           to="/admin" 
           style={{
             display: 'inline-flex', alignItems: 'center', marginBottom: '1.5rem',
-            color: colors.textSecondary, textDecoration: 'none', fontWeight: '500',
+            color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: '500',
             transition: 'color 0.2s'
           }}
-          onMouseEnter={(e) => e.target.style.color = colors.primary}
-          onMouseLeave={(e) => e.target.style.color = colors.textSecondary}
         >
           <FaArrowLeft className="mr-2" /> Back to Dashboard
         </Link>
 
         {/* Glass Card */}
-        <div style={{
-          background: colors.surface,
-          borderRadius: '24px',
-          padding: '2.5rem',
-          boxShadow: `0 8px 32px ${colors.shadow}`,
-          border: `1px solid ${colors.border}`
-        }}>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: 'bold', color: colors.text, marginBottom: '2rem' }}>
+        <div className="glass-card">
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 'bold', marginBottom: '2rem' }}>
             Edit Product
           </h1>
           
-          {isLoading && <div style={{color: colors.text}}>Loading...</div>}
-          {isError && <div style={{color: colors.error, marginBottom: '1rem'}}>{message}</div>}
+          {isLoading && <div style={{marginBottom: '1rem'}}>Loading...</div>}
+          {isError && <div style={{color: 'var(--error)', marginBottom: '1rem'}}>{message}</div>}
 
-          <form onSubmit={submitHandler} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <form onSubmit={submitHandler}>
             
             {/* Name */}
-            <div>
-              <label style={labelStyle}>Product Name</label>
+            <div className="form-group">
+              <label className="form-label">Product Name</label>
               <input
                 type="text"
                 placeholder="Enter name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                style={inputStyle}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
+                className="input-field"
               />
             </div>
 
             {/* Price & Stock Row */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-              <div>
-                <label style={labelStyle}>Price (₹)</label>
+            <div className="grid-2">
+              <div className="form-group">
+                <label className="form-label">Price (₹)</label>
                 <input
                   type="number"
                   placeholder="Enter price"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
-                  style={inputStyle}
-                  onFocus={handleFocus}
-                  onBlur={handleBlur}
+                  className="input-field"
                 />
               </div>
-              <div>
-                <label style={labelStyle}>Count In Stock</label>
+              <div className="form-group">
+                <label className="form-label">Count In Stock</label>
                 <input
                   type="number"
                   placeholder="Enter stock"
                   value={countInStock}
                   onChange={(e) => setCountInStock(e.target.value)}
-                  style={inputStyle}
-                  onFocus={handleFocus}
-                  onBlur={handleBlur}
+                  className="input-field"
                 />
               </div>
             </div>
 
             {/* Category */}
-            <div>
-              <label style={labelStyle}>Category</label>
+            <div className="form-group">
+              <label className="form-label">Category</label>
               <input
                 type="text"
                 placeholder="Enter category"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                style={inputStyle}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
+                className="input-field"
               />
             </div>
 
             {/* Image */}
-            <div>
-              <label style={labelStyle}>Image URL</label>
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'stretch' }}>
+            <div className="form-group">
+              <label className="form-label">Image URL</label>
+              <div style={{ display: 'flex', gap: '1rem' }}>
                   <input
                     type="text"
                     placeholder="Enter image URL"
                     value={image}
                     onChange={(e) => setImage(e.target.value)}
-                    style={{ ...inputStyle, flex: 1 }}
-                    onFocus={handleFocus}
-                    onBlur={handleBlur}
+                    className="input-field"
+                    style={{ flex: 1 }}
                   />
                   
                   <div style={{ position: 'relative' }}>
@@ -240,72 +190,41 @@ const ProductEditPage = () => {
                     />
                     <label 
                         htmlFor="image-file"
+                        className="btn-outline"
                         style={{
                           height: '100%',
-                          display: 'flex', alignItems: 'center', padding: '0 1.5rem',
-                          background: colors.surfaceLight,
-                          border: `2px solid ${colors.border}`,
-                          borderRadius: '10px', cursor: 'pointer',
-                          color: colors.text, fontWeight: '500',
-                          transition: 'all 0.2s'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.borderColor = colors.primary;
-                          e.currentTarget.style.color = colors.primary;
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.borderColor = colors.border;
-                          e.currentTarget.style.color = colors.text;
+                          display: 'flex', alignItems: 'center',
+                          padding: '0 1.5rem',
+                          cursor: 'pointer',
+                          whiteSpace: 'nowrap'
                         }}
                     >
-                        {uploading ? '...' : <><FaUpload className="mr-2"/> Upload</>}
+                        {uploading ? '...' : <><FaUpload style={{ marginRight: '8px' }}/> Upload</>}
                     </label>
                   </div>
               </div>
             </div>
 
             {/* Description */}
-            <div>
-              <label style={labelStyle}>Description</label>
+            <div className="form-group">
+              <label className="form-label">Description</label>
               <textarea
                 placeholder="Enter description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows="5"
-                style={{ ...inputStyle, resize: 'vertical' }}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
+                className="input-field"
+                style={{ resize: 'vertical' }}
               ></textarea>
             </div>
 
             {/* Submit Button */}
             <button
               type="submit"
-              style={{
-                width: '100%',
-                padding: '16px',
-                marginTop: '1rem',
-                background: `linear-gradient(135deg, ${colors.primary}, ${colors.primaryDark})`,
-                color: '#fff',
-                border: 'none',
-                borderRadius: '12px',
-                fontSize: '16px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
-                transition: 'all 0.3s ease',
-                boxShadow: `0 4px 12px ${colors.shadow}`
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = `0 8px 20px ${colors.shadow}`;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = `0 4px 12px ${colors.shadow}`;
-              }}
+              className="btn-primary"
+              style={{ marginTop: '1rem' }}
             >
-              <FaSave /> Update Product
+              <FaSave style={{ marginRight: '8px' }} /> Update Product
             </button>
           </form>
         </div>
