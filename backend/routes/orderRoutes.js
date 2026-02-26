@@ -31,7 +31,6 @@ const addOrderItems = asyncHandler(async (req, res) => {
       taxPrice,
       shippingPrice,
       totalPrice,
-      // If paymentResult exists, mark as Paid immediately
       paymentResult: paymentResult || null,
       isPaid: paymentResult ? true : false,
       paidAt: paymentResult ? Date.now() : null,

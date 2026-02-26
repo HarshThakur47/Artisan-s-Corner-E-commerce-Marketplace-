@@ -5,7 +5,7 @@ const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const { protect } = require('../middleware/authMiddleware');
 
-// Initialize Razorpay (with fallback for missing keys)
+// Initialize Razorpay
 let razorpay;
 try {
   razorpay = new Razorpay({
@@ -35,7 +35,7 @@ const createOrder = asyncHandler(async (req, res) => {
 
   try {
     const options = {
-      amount: Math.round(amount * 100), // Convert to paise (smallest currency unit)
+      amount: Math.round(amount * 100), 
       currency: currency,
       receipt: `order_${Date.now()}`,
       notes: {
@@ -70,7 +70,6 @@ const verifyPayment = asyncHandler(async (req, res) => {
   }
 
   try {
-    // Verify the payment signature
     const body = razorpay_order_id + '|' + razorpay_payment_id;
     const expectedSignature = crypto
       .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
@@ -131,7 +130,6 @@ const handleWebhook = asyncHandler(async (req, res) => {
       switch (event.event) {
         case 'payment.captured':
           console.log('Payment captured successfully:', event.payload.payment.entity.id);
-          // Here you would typically update your order status
           break;
         case 'payment.failed':
           console.log('Payment failed:', event.payload.payment.entity.id);

@@ -12,11 +12,11 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Configure multer for memory storage (Stable v1 style)
+// Configure multer for memory storage
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB limit completely protects you from the audit warning vulnerability
+    fileSize: 5 * 1024 * 1024, // 5MB limit 
   },
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
@@ -37,11 +37,9 @@ const uploadImage = asyncHandler(async (req, res) => {
   }
 
   try {
-    // Convert buffer to base64
     const b64 = Buffer.from(req.file.buffer).toString('base64');
     const dataURI = `data:${req.file.mimetype};base64,${b64}`;
 
-    // Upload to Cloudinary
     const result = await cloudinary.uploader.upload(dataURI, {
       folder: 'artisans-corner',
       use_filename: true,

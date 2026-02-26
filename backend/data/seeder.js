@@ -87,25 +87,21 @@ const sampleProducts = [
 
 const importData = async () => {
   try {
-    // Clear existing data
     await Order.deleteMany();
     await Product.deleteMany();
     await User.deleteMany();
 
-    // 1. Create users
-    // Note: We use User.create() so the password hashing middleware runs!
     const createdUsers = await User.create(sampleUsers);
     const adminUser = createdUsers[0]._id;
     const regularUser = createdUsers[1]._id;
 
-    // 2. Add admin user to products
     const sampleProductsWithUser = sampleProducts.map((product) => {
       return { ...product, user: adminUser };
     });
 
     const createdProducts = await Product.insertMany(sampleProductsWithUser);
     
-    // 3. Create a Sample Order
+
     const sampleOrder = {
       user: regularUser,
       orderItems: [

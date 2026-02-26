@@ -84,12 +84,15 @@ artisans-corner/
 │   ├── routes/             # API endpoints
 │   ├── middleware/         # Authentication & validation
 │   ├── data/              # Sample data seeder
+│   ├── utils/             # Token Generation       
 │   └── server.js          # Main server file
 ├── frontend/               # React application
 │   ├── src/
 │   │   ├── components/    # Reusable UI components
 │   │   ├── pages/         # Page components
 │   │   ├── store/         # Redux store & slices
+│   │   ├── context/       # Theme Context
+│   │   ├── utils/         # Configs
 │   │   └── App.js         # Main app component
 │   └── public/            # Static assets
 └── README.md              # This file
