@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { BASE_URL } from '../../utils/config';
-const API_URL = BASE_URL || 'http://localhost:5000/api';
+
+const API_URL = `${BASE_URL}/products`;
 
 const initialState = {
   products: [],
@@ -14,10 +15,9 @@ const initialState = {
   message: '',
 };
 
-// Get all products
 export const getProducts = createAsyncThunk('products/getAll', async (_, thunkAPI) => {
   try {
-    const response = await axios.get(`${API_URL}/products`);
+    const response = await axios.get(API_URL);
     return response.data;
   } catch (error) {
     const message = error.response?.data?.message || error.message || error.toString();
@@ -25,10 +25,9 @@ export const getProducts = createAsyncThunk('products/getAll', async (_, thunkAP
   }
 });
 
-// Get single product
 export const getProduct = createAsyncThunk('products/getOne', async (id, thunkAPI) => {
   try {
-    const response = await axios.get(`${API_URL}/products/${id}`);
+    const response = await axios.get(`${API_URL}/${id}`);
     return response.data;
   } catch (error) {
     const message = error.response?.data?.message || error.message || error.toString();
@@ -36,7 +35,6 @@ export const getProduct = createAsyncThunk('products/getOne', async (id, thunkAP
   }
 });
 
-// Create product (Admin)
 export const createProduct = createAsyncThunk('products/create', async (productData, thunkAPI) => {
   try {
     const token = thunkAPI.getState().auth.user?.token;
@@ -45,7 +43,7 @@ export const createProduct = createAsyncThunk('products/create', async (productD
         Authorization: `Bearer ${token}`,
       },
     };
-    const response = await axios.post(`${API_URL}/products`, productData, config);
+    const response = await axios.post(API_URL, productData, config);
     return response.data;
   } catch (error) {
     const message = error.response?.data?.message || error.message || error.toString();
@@ -53,7 +51,6 @@ export const createProduct = createAsyncThunk('products/create', async (productD
   }
 });
 
-// Update product (Admin)
 export const updateProduct = createAsyncThunk('products/update', async ({ id, productData }, thunkAPI) => {
   try {
     const token = thunkAPI.getState().auth.user?.token;
@@ -62,7 +59,7 @@ export const updateProduct = createAsyncThunk('products/update', async ({ id, pr
         Authorization: `Bearer ${token}`,
       },
     };
-    const response = await axios.put(`${API_URL}/products/${id}`, productData, config);
+    const response = await axios.put(`${API_URL}/${id}`, productData, config);
     return response.data;
   } catch (error) {
     const message = error.response?.data?.message || error.message || error.toString();
@@ -70,7 +67,6 @@ export const updateProduct = createAsyncThunk('products/update', async ({ id, pr
   }
 });
 
-// Delete product (Admin)
 export const deleteProduct = createAsyncThunk('products/delete', async (id, thunkAPI) => {
   try {
     const token = thunkAPI.getState().auth.user?.token;
@@ -79,7 +75,7 @@ export const deleteProduct = createAsyncThunk('products/delete', async (id, thun
         Authorization: `Bearer ${token}`,
       },
     };
-    await axios.delete(`${API_URL}/products/${id}`, config);
+    await axios.delete(`${API_URL}/${id}`, config);
     return id;
   } catch (error) {
     const message = error.response?.data?.message || error.message || error.toString();
@@ -87,7 +83,6 @@ export const deleteProduct = createAsyncThunk('products/delete', async (id, thun
   }
 });
 
-// Add review to product
 export const addReview = createAsyncThunk('products/addReview', async ({ id, reviewData }, thunkAPI) => {
   try {
     const token = thunkAPI.getState().auth.user?.token;
@@ -96,14 +91,14 @@ export const addReview = createAsyncThunk('products/addReview', async ({ id, rev
         Authorization: `Bearer ${token}`,
       },
     };
-    const response = await axios.post(`${API_URL}/products/${id}/reviews`, reviewData, config);
+    const response = await axios.post(`${API_URL}/${id}/reviews`, reviewData, config);
     return response.data;
   } catch (error) {
     const message = error.response?.data?.message || error.message || error.toString();
     return thunkAPI.rejectWithValue(message);
   }
 });
-//product 
+
 export const productSlice = createSlice({
   name: 'product',
   initialState,
@@ -123,15 +118,24 @@ export const productSlice = createSlice({
       .addCase(getProducts.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        // Fix for pagination structure
-        state.products = action.payload.products;
-        state.page = action.payload.page;
-        state.pages = action.payload.pages;
+        
+        if (action.payload && action.payload.products) {
+           state.products = action.payload.products;
+           state.page = action.payload.page;
+           state.pages = action.payload.pages;
+        } else if (Array.isArray(action.payload)) {
+           state.products = action.payload;
+           state.page = 1;
+           state.pages = 1;
+        } else {
+           state.products = [];
+        }
       })
       .addCase(getProducts.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
+        state.products = [];
       })
       .addCase(getProduct.pending, (state) => {
         state.isLoading = true;
@@ -152,7 +156,9 @@ export const productSlice = createSlice({
       .addCase(createProduct.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.products.push(action.payload);
+        if (Array.isArray(state.products)) {
+            state.products.push(action.payload);
+        }
       })
       .addCase(createProduct.rejected, (state, action) => {
         state.isLoading = false;
@@ -165,9 +171,11 @@ export const productSlice = createSlice({
       .addCase(updateProduct.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        const index = state.products.findIndex((product) => product._id === action.payload._id);
-        if (index !== -1) {
-          state.products[index] = action.payload;
+        if (Array.isArray(state.products)) {
+            const index = state.products.findIndex((product) => product._id === action.payload._id);
+            if (index !== -1) {
+              state.products[index] = action.payload;
+            }
         }
         if (state.product && state.product._id === action.payload._id) {
           state.product = action.payload;
@@ -184,7 +192,9 @@ export const productSlice = createSlice({
       .addCase(deleteProduct.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.products = state.products.filter((product) => product._id !== action.payload);
+        if (Array.isArray(state.products)) {
+            state.products = state.products.filter((product) => product._id !== action.payload);
+        }
       })
       .addCase(deleteProduct.rejected, (state, action) => {
         state.isLoading = false;
@@ -200,9 +210,11 @@ export const productSlice = createSlice({
         if (state.product && state.product._id === action.payload._id) {
           state.product = action.payload;
         }
-        const index = state.products.findIndex((product) => product._id === action.payload._id);
-        if (index !== -1) {
-          state.products[index] = action.payload;
+        if (Array.isArray(state.products)) {
+            const index = state.products.findIndex((product) => product._id === action.payload._id);
+            if (index !== -1) {
+              state.products[index] = action.payload;
+            }
         }
       })
       .addCase(addReview.rejected, (state, action) => {
