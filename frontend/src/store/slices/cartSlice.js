@@ -4,21 +4,15 @@ const initialState = localStorage.getItem('cart')
   ? JSON.parse(localStorage.getItem('cart'))
   : { cartItems: [], shippingAddress: {}, paymentMethod: 'PayPal', total: 0 };
 
-// Helper to calculate prices and save to localStorage
 const updateCart = (state) => {
-  // Calculate Item Price
+
   const itemsPrice = state.cartItems.reduce((acc, item) => acc + item.price * item.qty, 0);
-  
-  // Calculate Shipping (Example: ₹50 if order < ₹1000, else free)
   const shippingPrice = itemsPrice > 1000 ? 0 : 50;
   
-  // Calculate Tax (18% GST)
-  const taxPrice = Number((0.18 * itemsPrice).toFixed(2));
-  
-  // Grand Total
+  const taxPrice = Number((0.18 * itemsPrice).toFixed(2)); // Let GST = 18%
+
   state.total = (itemsPrice + shippingPrice + taxPrice).toFixed(2);
   
-  // Save to local storage
   localStorage.setItem('cart', JSON.stringify(state));
   
   return state;

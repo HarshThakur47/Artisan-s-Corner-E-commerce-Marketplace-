@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
-/* --- THEME ENGINE --- */
 :root {
   /* LIGHT MODE (Default) */
   --primary: #2E2A3B;
@@ -131,11 +130,11 @@ a {
   border: 2px solid var(--border);
   border-radius: 12px;
   font-size: 15px;
-  background: var(--surface); /* Default background */
+  background: var(--surface);
   color: var(--text);
   outline: none;
   transition: all 0.3s ease;
-  box-sizing: border-box; /* Critical for layout */
+  box-sizing: border-box; 
 }
 
 .input-field:focus {
@@ -312,7 +311,7 @@ a {
   background: var(--primary);
 }
 
-/* Outline Button (Transparent with border) */
+/* Outline Button */
 .btn-outline {
   background: transparent;
   border: 2px solid var(--text);

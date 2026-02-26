@@ -12,7 +12,6 @@ const CartPage = () => {
   const cart = useSelector((state) => state.cart) || {};
   const { cartItems = [] } = cart; 
 
-  // FIX: Calculate "Item Subtotal" purely (No tax/shipping)
   const itemsSubtotal = cartItems.reduce((acc, item) => acc + item.price * item.qty, 0);
   const totalItemsCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
 
@@ -59,7 +58,6 @@ const CartPage = () => {
               <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>
                 Subtotal ({totalItemsCount}) items
               </h2>
-              {/* FIX: Display correct Item Subtotal, not Grand Total */}
               <p style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--primary)', marginBottom: '0.5rem' }}>
                 ₹{itemsSubtotal.toFixed(2)}
               </p>

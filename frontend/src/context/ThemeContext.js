@@ -23,36 +23,33 @@ export const ThemeProvider = ({ children }) => {
 
   const toggleTheme = () => setIsDark(!isDark);
 
-  // Updated Color Palette for "Black-Purple" Aesthetic
   const theme = {
     isDark,
     toggleTheme,
     colors: isDark ? {
-      // --- DARK MODE ---
-      primary: '#8B5CF6',      // Vibrant Purple (Buttons)
-      primaryDark: '#7C3AED',  // Darker Purple (Hover)
-      secondary: '#A78BFA',    // Light Purple
-      background: '#0F0E17',   // Deep Void Black (Not gray)
-      surface: '#1E1B29',      // Dark Purple-ish Gray (Cards/Footer)
-      surfaceLight: '#2D2B42', // Lighter Surface
-      text: '#FFFFFE',         // White
-      textSecondary: '#94A1B2',// Muted Text
-      border: '#2D2B42',       // Dark Border
+      primary: '#8B5CF6',      
+      primaryDark: '#7C3AED',  
+      secondary: '#A78BFA',    
+      background: '#0F0E17',  
+      surface: '#1E1B29',     
+      surfaceLight: '#2D2B42',
+      text: '#FFFFFE',
+      textSecondary: '#94A1B2',
+      border: '#2D2B42',  
       error: '#FF5470',
       success: '#2CB67D',
       warning: '#FF8E3C',
       divider: '#2D2B42',
-      hover: 'rgba(139, 92, 246, 0.1)', // Purple Tint Hover
+      hover: 'rgba(139, 92, 246, 0.1)',
       shadow: 'rgba(0, 0, 0, 0.6)',
     } : {
-      // --- LIGHT MODE ---
-      primary: '#2E2A3B',      // Black with Purple Tint (Buttons)
-      primaryDark: '#1A1821',  // Near Black (Hover)
-      secondary: '#6D597A',    // Muted Purple
-      background: '#F9F8FC',   // Very Light Purple-White
-      surface: '#ffffff',      // Pure White
+      primary: '#2E2A3B',
+      primaryDark: '#1A1821', 
+      secondary: '#6D597A', 
+      background: '#F9F8FC', 
+      surface: '#ffffff', 
       surfaceLight: '#F3F4F6',
-      text: '#2E2A3B',         // Dark Black-Purple
+      text: '#2E2A3B',
       textSecondary: '#6B7280',
       border: '#E5E7EB',
       error: '#EF4444',

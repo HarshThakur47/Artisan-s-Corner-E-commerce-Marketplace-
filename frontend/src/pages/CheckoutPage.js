@@ -16,7 +16,6 @@ const CheckoutPage = () => {
   const { user } = useSelector((state) => state.auth);
   const [currentStep, setCurrentStep] = useState(1);
 
-  // 1. Recalculate costs locally to ensure Math is correct (Numbers, not Strings)
   const itemsPrice = cartItems.reduce((acc, item) => acc + item.price * item.qty, 0);
   const shippingPrice = itemsPrice > 1000 ? 0 : 50;
   const taxPrice = itemsPrice * 0.18;
@@ -38,7 +37,7 @@ const CheckoutPage = () => {
 
       // Create Order on Server
       const { data: order } = await axios.post(`${BASE_URL}/orders/razorpay`, { 
-        amount: Math.round(totalPrice) // Use the numeric totalPrice
+        amount: Math.round(totalPrice) 
       });
 
       const options = {
@@ -101,7 +100,6 @@ const CheckoutPage = () => {
     <div className="page-wrapper">
       <div className="container">
         
-        {/* Step Indicator */}
         <div className="steps-container">
            <div className={`step-circle ${currentStep >= 1 ? 'active' : ''}`}>1</div>
            <div className={`step-line ${currentStep >= 2 ? 'active' : ''}`}></div>
@@ -109,7 +107,7 @@ const CheckoutPage = () => {
         </div>
 
         <div className="grid-2">
-          {/* Column 1: Shipping Form */}
+          {/* Shipping Form */}
           <div className="glass-card">
             <h2 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1.5rem' }}>Shipping Details</h2>
             <form onSubmit={handleSubmit}>
@@ -138,7 +136,7 @@ const CheckoutPage = () => {
             </form>
           </div>
 
-          {/* Column 2: Order Summary */}
+          {/* Order Summary */}
           <div className="glass-card" style={{ height: 'fit-content' }}>
             <h2 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1.5rem' }}>Order Summary</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>

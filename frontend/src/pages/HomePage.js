@@ -16,7 +16,6 @@ const HomePage = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [dispatch]);
 
-  // Scroll Reveal Animation Logic
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
@@ -32,11 +31,10 @@ const HomePage = () => {
   const categories = ['Handmade Crafts', 'Pottery & Ceramics', 'Textiles', 'Jewelry'];
 
   return (
-    <div className="page-wrapper" style={{ paddingTop: 0 }}> {/* Override padding for full hero */}
+    <div className="page-wrapper" style={{ paddingTop: 0 }}> 
       
-      {/* Hero Section */}
+      {/* Front Section */}
       <section style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', position: 'relative', overflow: 'hidden' }}>
-        {/* Animated Blobs */}
         <div className="blob blob-1" style={{ transform: `translateY(${scrollY * 0.2}px)` }} />
         <div className="blob blob-2" style={{ transform: `translateY(${scrollY * -0.15}px)` }} />
 

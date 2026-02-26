@@ -46,7 +46,6 @@ const Header = () => {
       <div className="container">
         <div style={{ display: 'flex', alignItems: 'center' }}>
           
-          {/* LEFT: Logo (Flex 1 ensures it pushes against center equally) */}
           <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start' }}>
             <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
               <div style={{ width: '40px', height: '40px', background: 'var(--primary)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -56,13 +55,11 @@ const Header = () => {
             </Link>
           </div>
 
-          {/* CENTER: Navigation (Flex 1 centered) */}
           <nav style={{ flex: 1, display: 'flex', justifyContent: 'center', gap: '2rem' }} className="hidden-mobile">
             <Link to="/products" className="nav-link">Shop</Link>
             <Link to="/about" className="nav-link">About</Link>
           </nav>
 
-          {/* RIGHT: Actions (Flex 1 right aligned) */}
           <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '1.5rem' }}>
             <Link to="/cart" style={{ position: 'relative', color: 'var(--text)' }}>
               <FaShoppingCart size={22} />

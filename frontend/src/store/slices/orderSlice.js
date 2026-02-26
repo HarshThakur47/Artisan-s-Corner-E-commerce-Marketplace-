@@ -29,7 +29,7 @@ export const createOrder = createAsyncThunk('orders/create', async (orderData, t
   }
 });
 
-// Get user orders (My Orders)
+// Get user orders
 export const getUserOrders = createAsyncThunk('orders/getUserOrders', async (_, thunkAPI) => {
   try {
     const token = thunkAPI.getState().auth.user?.token;
@@ -161,7 +161,6 @@ export const orderSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Create Order
       .addCase(createOrder.pending, (state) => { state.isLoading = true; })
       .addCase(createOrder.fulfilled, (state, action) => {
         state.isLoading = false;
@@ -173,7 +172,6 @@ export const orderSlice = createSlice({
         state.isError = true;
         state.message = action.payload;
       })
-      // Get User Orders
       .addCase(getUserOrders.pending, (state) => { state.isLoading = true; })
       .addCase(getUserOrders.fulfilled, (state, action) => {
         state.isLoading = false;
@@ -195,7 +193,6 @@ export const orderSlice = createSlice({
         state.isError = true;
         state.message = action.payload;
       })
-      // Get Order By ID
       .addCase(getOrderById.pending, (state) => { state.isLoading = true; })
       .addCase(getOrderById.fulfilled, (state, action) => {
         state.isLoading = false;
@@ -206,11 +203,9 @@ export const orderSlice = createSlice({
         state.isError = true;
         state.message = action.payload;
       })
-      // Deliver Order
       .addCase(deliverOrder.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        // Update the specific order in the list without reloading
         const index = state.orders.findIndex(order => order._id === action.payload._id);
         if (index !== -1) {
           state.orders[index] = action.payload;

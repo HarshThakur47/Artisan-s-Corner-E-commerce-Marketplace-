@@ -109,7 +109,7 @@ const ProductEditPage = () => {
           <FaArrowLeft className="mr-2" /> Back to Dashboard
         </Link>
 
-        {/* Glass Card */}
+        {/* Card */}
         <div className="glass-card">
           <h1 style={{ fontSize: '1.75rem', fontWeight: 'bold', marginBottom: '2rem' }}>
             Edit Product

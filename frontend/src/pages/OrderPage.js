@@ -23,13 +23,12 @@ const OrderPage = () => {
       <div className="container">
         <h1 style={{ marginBottom: '2rem', fontSize: '2rem', fontWeight: 'bold' }}>Order {order._id}</h1>
         
-        {/* Use grid-2-1 for Main Content (Left) vs Summary (Right) */}
         <div className="grid-2-1" style={{ gap: '2rem', display: 'grid' }}>
           
           {/* LEFT COLUMN: Details & Items */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             
-            {/* 1. Shipping & Payment Info */}
+            {/* Shipping & Payment Info */}
             <div className="glass-card">
               <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem', fontWeight: '600' }}>Shipping & Payment</h2>
               
@@ -58,7 +57,7 @@ const OrderPage = () => {
               </div>
             </div>
 
-            {/* 2. Order Items List */}
+            {/* Order Items List */}
             <div className="glass-card">
               <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', fontWeight: '600' }}>Order Items</h2>
               {(order.orderItems || []).map((item, index) => (
@@ -77,13 +76,12 @@ const OrderPage = () => {
             </div>
           </div>
 
-          {/* RIGHT COLUMN: Amazon-style Order Summary */}
+          {/* RIGHT COLUMN: Order Summary */}
           <div className="glass-card" style={{ height: 'fit-content' }}>
             <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', fontWeight: '600' }}>Order Summary</h2>
             
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', color: 'var(--text-secondary)' }}>
               <span>Items Price:</span>
-              {/* Safety Check: Default to 0 if undefined */}
               <span>₹{order.itemsPrice || 0}</span>
             </div>
             

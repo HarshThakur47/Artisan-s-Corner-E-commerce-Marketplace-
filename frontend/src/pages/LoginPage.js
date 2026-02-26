@@ -18,14 +18,12 @@ const LoginPage = () => {
     (state) => state.auth
   );
 
-  // 1. Get the redirect path (e.g., "/checkout") or default to home "/"
   const searchParams = new URLSearchParams(location.search);
   const redirect = searchParams.get('redirect') || '/';
 
   useEffect(() => {
     if (isError) toast.error(message);
     
-    // 2. CRITICAL FIX: Navigate to 'redirect', NOT always to '/'
     if (isSuccess || user) {
       navigate(redirect);
     }

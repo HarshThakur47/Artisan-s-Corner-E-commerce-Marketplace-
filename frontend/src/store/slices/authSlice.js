@@ -3,7 +3,6 @@ import axios from 'axios';
 import { BASE_URL } from '../../utils/config';
 const API_URL = BASE_URL || 'http://localhost:5000/api';
 
-// Get user from localStorage
 const user = JSON.parse(localStorage.getItem('user'));
 
 const initialState = {
