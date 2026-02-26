@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../store/slices/authSlice';
-import { FaShoppingCart, FaUser, FaBars, FaTimes } from 'react-icons/fa';
+import { FaShoppingCart, FaUser, FaBars, FaTimes, FaSignOutAlt, FaChartPie } from 'react-icons/fa';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -41,11 +41,20 @@ const Header = () => {
     navigate('/');
   };
 
+  // --- NEW: Scroll To About Function ---
+  const scrollToAbout = () => {
+    const footer = document.getElementById('about-section');
+    if (footer) {
+      footer.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <header className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="container">
         <div style={{ display: 'flex', alignItems: 'center' }}>
           
+          {/* LEFT: Logo */}
           <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start' }}>
             <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
               <div style={{ width: '40px', height: '40px', background: 'var(--primary)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -55,11 +64,14 @@ const Header = () => {
             </Link>
           </div>
 
+          {/* CENTER: Nav */}
           <nav style={{ flex: 1, display: 'flex', justifyContent: 'center', gap: '2rem' }} className="hidden-mobile">
             <Link to="/products" className="nav-link">Shop</Link>
-            <Link to="/about" className="nav-link">About</Link>
+            {/* UPDATED: Button for Scrolling */}
+            <button onClick={scrollToAbout} className="nav-link" style={{ background: 'none', border: 'none', cursor: 'pointer', font: 'inherit', padding: '8px 0' }}>About</button>
           </nav>
 
+          {/* RIGHT: Actions */}
           <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '1.5rem' }}>
             <Link to="/cart" style={{ position: 'relative', color: 'var(--text)' }}>
               <FaShoppingCart size={22} />
@@ -77,12 +89,42 @@ const Header = () => {
                     <FaUser color="white" size={14} />
                   </div>
                 </button>
+                
                 {isUserMenuOpen && (
-                  <div className="glass-card" style={{ position: 'absolute', right: 0, top: '120%', minWidth: '200px', padding: '1rem', zIndex: 100 }}>
-                    <p style={{ fontWeight: '600', marginBottom: '0.5rem' }}>{user.name}</p>
-                    <Link to="/profile" className="nav-link" style={{ display: 'block' }}>Profile</Link>
-                    {user.isAdmin && <Link to="/admin" className="nav-link" style={{ display: 'block' }}>Dashboard</Link>}
-                    <button onClick={handleLogout} style={{ color: 'var(--error)', background: 'none', border: 'none', cursor: 'pointer', marginTop: '0.5rem', fontWeight: '600' }}>Logout</button>
+                  <div className="glass-card animate-fade-in" style={{ 
+                      position: 'absolute', 
+                      right: 0, 
+                      top: '140%', 
+                      width: '240px', 
+                      padding: '8px', 
+                      zIndex: 100, 
+                      borderRadius: '16px',
+                      border: '1px solid var(--glass-border)',
+                      boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+                      background: 'var(--surface)' 
+                  }}>
+                    <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)', marginBottom: '8px' }}>
+                      <p style={{ fontWeight: '700', color: 'var(--text)', fontSize: '0.95rem', marginBottom: '2px' }}>{user.name}</p>
+                      <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user.email}</p>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <Link to="/profile" className="menu-item" onClick={() => setIsUserMenuOpen(false)}>
+                        <FaUser size={14} className="menu-icon" /> Profile Settings
+                      </Link>
+                      
+                      {user.isAdmin && (
+                        <Link to="/admin" className="menu-item" onClick={() => setIsUserMenuOpen(false)}>
+                          <FaChartPie size={14} className="menu-icon" /> Admin Dashboard
+                        </Link>
+                      )}
+                    </div>
+
+                    <div style={{ borderTop: '1px solid var(--border)', marginTop: '8px', paddingTop: '8px' }}>
+                      <button onClick={handleLogout} className="menu-item logout-btn">
+                        <FaSignOutAlt size={14} /> Sign Out
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -93,7 +135,6 @@ const Header = () => {
               </div>
             )}
 
-            {/* Mobile Toggle */}
             <button onClick={() => setIsMenuOpen(!isMenuOpen)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text)' }} className="mobile-only">
               {isMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
             </button>
@@ -104,7 +145,8 @@ const Header = () => {
         {isMenuOpen && (
           <div className="mobile-menu mobile-only">
             <Link to="/products" className="nav-link" style={{ display: 'block', padding: '10px 0' }} onClick={() => setIsMenuOpen(false)}>Shop</Link>
-            <Link to="/about" className="nav-link" style={{ display: 'block', padding: '10px 0' }} onClick={() => setIsMenuOpen(false)}>About</Link>
+            {/* UPDATED: Mobile About Button */}
+            <button onClick={() => { scrollToAbout(); setIsMenuOpen(false); }} className="nav-link" style={{ background: 'none', border: 'none', cursor: 'pointer', font: 'inherit', padding: '10px 0', width: '100%', textAlign: 'left' }}>About</button>
             {!user && (
               <>
                 <Link to="/login" className="nav-link" style={{ display: 'block', padding: '10px 0' }} onClick={() => setIsMenuOpen(false)}>Login</Link>
@@ -115,6 +157,38 @@ const Header = () => {
         )}
       </div>
       <style>{`
+        .menu-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 10px 16px;
+          color: var(--text);
+          text-decoration: none;
+          font-size: 0.9rem;
+          font-weight: 500;
+          border-radius: 8px;
+          transition: all 0.2s ease;
+          cursor: pointer;
+          border: none;
+          background: transparent;
+          width: 100%;
+          text-align: left;
+        }
+        .menu-item:hover {
+          background: var(--surface-light);
+          color: var(--primary);
+        }
+        .menu-icon {
+          color: var(--text-secondary);
+          transition: color 0.2s;
+        }
+        .menu-item:hover .menu-icon {
+          color: var(--primary);
+        }
+        .logout-btn:hover {
+          background: rgba(239, 68, 68, 0.1) !important;
+          color: #EF4444 !important;
+        }
         @media (max-width: 768px) { .hidden-mobile { display: none !important; } }
         @media (min-width: 769px) { .mobile-only { display: none !important; } }
       `}</style>
