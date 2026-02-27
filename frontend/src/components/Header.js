@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../store/slices/authSlice';
 import { FaShoppingCart, FaUser, FaBars, FaTimes, FaSignOutAlt, FaChartPie } from 'react-icons/fa';
@@ -8,7 +8,9 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  
   const navigate = useNavigate();
+  const location = useLocation(); // <--- Added to check the current page
   const dispatch = useDispatch();
   
   const userMenuRef = useRef(null);
@@ -41,11 +43,27 @@ const Header = () => {
     navigate('/');
   };
 
-  // --- NEW: Scroll To About Function ---
+  // --- Scroll Functions ---
   const scrollToAbout = () => {
     const footer = document.getElementById('about-section');
     if (footer) {
       footer.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const scrollToShop = () => {
+    if (location.pathname === '/') {
+      // 1. If on Home Page: Scroll down to the shop section
+      const shopSection = document.getElementById('shop-section');
+      if (shopSection) {
+        shopSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else if (location.pathname === '/products') {
+      // 2. If already on Products Page: Scroll smoothly to the top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      // 3. If on any other page: Navigate to Products
+      navigate('/products');
     }
   };
 
@@ -64,10 +82,9 @@ const Header = () => {
             </Link>
           </div>
 
-          {/* CENTER: Nav */}
+          {/* CENTER: Nav (Updated Shop Button) */}
           <nav style={{ flex: 1, display: 'flex', justifyContent: 'center', gap: '2rem' }} className="hidden-mobile">
-            <Link to="/products" className="nav-link">Shop</Link>
-            {/* UPDATED: Button for Scrolling */}
+            <button onClick={scrollToShop} className="nav-link" style={{ background: 'none', border: 'none', cursor: 'pointer', font: 'inherit', padding: '8px 0' }}>Shop</button>
             <button onClick={scrollToAbout} className="nav-link" style={{ background: 'none', border: 'none', cursor: 'pointer', font: 'inherit', padding: '8px 0' }}>About</button>
           </nav>
 
@@ -92,16 +109,7 @@ const Header = () => {
                 
                 {isUserMenuOpen && (
                   <div className="glass-card animate-fade-in" style={{ 
-                      position: 'absolute', 
-                      right: 0, 
-                      top: '140%', 
-                      width: '240px', 
-                      padding: '8px', 
-                      zIndex: 100, 
-                      borderRadius: '16px',
-                      border: '1px solid var(--glass-border)',
-                      boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-                      background: 'var(--surface)' 
+                      position: 'absolute', right: 0, top: '140%', width: '240px', padding: '8px', zIndex: 100, borderRadius: '16px', border: '1px solid var(--glass-border)', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', background: 'var(--surface)' 
                   }}>
                     <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)', marginBottom: '8px' }}>
                       <p style={{ fontWeight: '700', color: 'var(--text)', fontSize: '0.95rem', marginBottom: '2px' }}>{user.name}</p>
@@ -141,11 +149,10 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu (Updated Shop Button) */}
         {isMenuOpen && (
           <div className="mobile-menu mobile-only">
-            <Link to="/products" className="nav-link" style={{ display: 'block', padding: '10px 0' }} onClick={() => setIsMenuOpen(false)}>Shop</Link>
-            {/* UPDATED: Mobile About Button */}
+            <button onClick={() => { scrollToShop(); setIsMenuOpen(false); }} className="nav-link" style={{ background: 'none', border: 'none', cursor: 'pointer', font: 'inherit', padding: '10px 0', width: '100%', textAlign: 'left' }}>Shop</button>
             <button onClick={() => { scrollToAbout(); setIsMenuOpen(false); }} className="nav-link" style={{ background: 'none', border: 'none', cursor: 'pointer', font: 'inherit', padding: '10px 0', width: '100%', textAlign: 'left' }}>About</button>
             {!user && (
               <>
@@ -156,39 +163,13 @@ const Header = () => {
           </div>
         )}
       </div>
+      
       <style>{`
-        .menu-item {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          padding: 10px 16px;
-          color: var(--text);
-          text-decoration: none;
-          font-size: 0.9rem;
-          font-weight: 500;
-          border-radius: 8px;
-          transition: all 0.2s ease;
-          cursor: pointer;
-          border: none;
-          background: transparent;
-          width: 100%;
-          text-align: left;
-        }
-        .menu-item:hover {
-          background: var(--surface-light);
-          color: var(--primary);
-        }
-        .menu-icon {
-          color: var(--text-secondary);
-          transition: color 0.2s;
-        }
-        .menu-item:hover .menu-icon {
-          color: var(--primary);
-        }
-        .logout-btn:hover {
-          background: rgba(239, 68, 68, 0.1) !important;
-          color: #EF4444 !important;
-        }
+        .menu-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; color: var(--text); text-decoration: none; font-size: 0.9rem; font-weight: 500; border-radius: 8px; transition: all 0.2s ease; cursor: pointer; border: none; background: transparent; width: 100%; text-align: left; }
+        .menu-item:hover { background: var(--surface-light); color: var(--primary); }
+        .menu-icon { color: var(--text-secondary); transition: color 0.2s; }
+        .menu-item:hover .menu-icon { color: var(--primary); }
+        .logout-btn:hover { background: rgba(239, 68, 68, 0.1) !important; color: #EF4444 !important; }
         @media (max-width: 768px) { .hidden-mobile { display: none !important; } }
         @media (min-width: 769px) { .mobile-only { display: none !important; } }
       `}</style>

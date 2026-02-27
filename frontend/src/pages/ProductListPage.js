@@ -6,7 +6,11 @@ import { FaStar, FaFilter, FaSearch, FaTimes } from 'react-icons/fa';
 
 const ProductListPage = () => {
   const dispatch = useDispatch();
-  const { products, isLoading } = useSelector((state) => state.product);
+  
+  // Safety checks
+  const productState = useSelector((state) => state.product) || {};
+  const { products = [], isLoading } = productState;
+  
   const [searchParams, setSearchParams] = useSearchParams();
   
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
@@ -14,11 +18,17 @@ const ProductListPage = () => {
   const [sortBy, setSortBy] = useState('name');
   const [showFilters, setShowFilters] = useState(false);
 
-  useEffect(() => { dispatch(getProducts()); }, [dispatch]);
+  useEffect(() => { 
+    dispatch(getProducts()); 
+  }, [dispatch]);
 
+  // FIX: Scroll to top whenever the URL parameters (like category) change
   useEffect(() => {
     setSelectedCategory(searchParams.get('category') || 'all');
     setSearchTerm(searchParams.get('search') || '');
+    
+    // Automatically scroll to the very top of the page smoothly
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [searchParams]);
 
   const categories = ['all', ...new Set(products.map(p => p.category))];
@@ -73,7 +83,7 @@ const ProductListPage = () => {
 
           {/* Filter Panel */}
           {showFilters && (
-            <div className="glass-card" style={{ marginTop: '1rem', padding: '2rem' }}>
+            <div className="glass-card animate-fade-in" style={{ marginTop: '1rem', padding: '2rem' }}>
               <div className="grid-3">
                 <div>
                   <label className="form-label">Category</label>

@@ -62,7 +62,7 @@ const HomePage = () => {
       </section>
 
       {/* Categories Section */}
-      <section className="scroll-reveal" style={{ padding: '6rem 0' }}>
+      <section id="shop-section" className="scroll-reveal" style={{ padding: '6rem 0' }}>
         <div className="container">
           <h2 style={{ fontSize: '2.5rem', textAlign: 'center', marginBottom: '4rem' }}>Explore Our Collections</h2>
           <div className="grid-4">
