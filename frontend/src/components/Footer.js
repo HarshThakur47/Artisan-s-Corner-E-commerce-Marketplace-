@@ -4,6 +4,7 @@ import { FaGithub, FaInstagram, FaTwitter, FaTimes, FaHeart, FaMapMarkerAlt, FaE
 
 const Footer = () => {
   const [showPrivacy, setShowPrivacy] = useState(false);
+  const [message, setMessage] = useState('');
 
   return (
     <>
@@ -73,16 +74,18 @@ const Footer = () => {
             <div>
               <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '1.5rem', color: 'var(--text)' }}>Join the Community</h3>
               <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: '1.6' }}>
-                Subscribe to our newsletter for exclusive updates, new arrivals, and artisan stories.
+              Have a question or want to collaborate? Feel free to reach out to us.
               </p>
               
               <div style={{ display: 'flex', marginBottom: '2rem', boxShadow: '0 4px 12px var(--shadow)', borderRadius: '12px' }}>
                 <input 
-                  type="email" 
-                  placeholder="Email address" 
+                  type="text" 
+                  placeholder="Message" 
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
                   style={{ flex: 1, padding: '14px 16px', borderRadius: '12px 0 0 12px', border: '1px solid var(--border)', borderRight: 'none', background: 'var(--surface)', color: 'var(--text)', outline: 'none', fontSize: '0.95rem' }} 
                 />
-                <button className="btn-primary" style={{ width: 'auto', borderRadius: '0 12px 12px 0', padding: '14px 24px', boxShadow: 'none' }}>Subscribe</button>
+                <a href={`mailto:harshwardhansinghthakur7227@gmail.com?subject=Contact from Artisan Corner&body=${encodeURIComponent(message)}`} className="btn-primary" style={{ width: 'auto', borderRadius: '0 12px 12px 0', padding: '14px 24px', boxShadow: 'none', cursor: 'pointer', textDecoration: 'none', display: 'flex', alignItems: 'center' }}>Contact</a>
               </div>
 
               <div style={{ display: 'flex', gap: '1rem' }}>
